@@ -1,0 +1,9 @@
+spring:
+  config:
+    import: optional:secrets.properties
+  profiles:
+    active: ${ENVIRONMENT_PROFILE_NAME:dev}
+  jpa:
+    open-in-view: false
+bot:
+  name: NumberMnemocardsGeneratorBot

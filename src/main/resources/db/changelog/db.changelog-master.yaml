@@ -1,0 +1,6 @@
+databaseChangeLog:
+  - changeSet:
+      id: initial-emptyVjj
+      author: d.pechatnikov
+      changes:
+        -  empty:  {}
