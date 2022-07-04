@@ -4,11 +4,37 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class NumberSplitter implements Splitter {
 
+    @Override
     public List<String> split(String number) {
+        List<String> groups = groupNumber(number);
+        List<String> accumulator = new ArrayList<>();
+        for (String group : groups) {
+            accumulator.addAll(splitNumber(group));
+        }
+
+        return accumulator;
+    }
+
+    private List<String> groupNumber(String number) {
+        String pattern = "(\\d+)";
+        Pattern regexp = Pattern.compile(pattern);
+        Matcher matcher = regexp.matcher(number);
+        List<String> groups = new ArrayList<>();
+
+        while (matcher.find()) {
+            groups.add(matcher.group(1));
+        }
+
+        return groups;
+    }
+
+    private List<String> splitNumber(String number) {
         List<String> numberAccumulator = new ArrayList<>();
         if (number.length() < 2) {
             return numberAccumulator;

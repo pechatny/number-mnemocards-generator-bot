@@ -6,16 +6,16 @@ import org.springframework.stereotype.Service;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 @Service
 public class ImageMerger {
     private static final String RESOURCES_DIR = ImageMerger.class.getResource("/").getPath();
+    private static final String NUMBERCARDS_DIR = ImageMerger.class.getResource("/numbercards/").getPath();
     private static final String GENERATED_DIR = RESOURCES_DIR + "generated/";
     private static final int IMAGE_WIDTH = 441;
     private static final int IMAGE_HEIGHT = 677;
-    private static final int ROW_SIZE = 3;
+    public static final String JPG = ".jpg";
 
     public ImageMerger() {
         initGeneratedFilesDirectory();
@@ -23,8 +23,9 @@ public class ImageMerger {
 
     @SneakyThrows
     public File mergeImages(List<String> numbers) {
-        int rowCount = numbers.size() / ROW_SIZE;
-        if (numbers.size() % ROW_SIZE != 0) {
+        int rowSize = numbers.size() == 4 ? 2 : 3;
+        int rowCount = numbers.size() / rowSize;
+        if (numbers.size() % rowSize != 0) {
             rowCount++;
         }
 
@@ -33,23 +34,17 @@ public class ImageMerger {
         if (rowCount == 1) {
             pageWidth = IMAGE_WIDTH * numbers.size();
         } else {
-            pageWidth = IMAGE_WIDTH * ROW_SIZE;
+            pageWidth = IMAGE_WIDTH * rowSize;
         }
         BufferedImage page = new BufferedImage(pageWidth, pageHeight, BufferedImage.TYPE_INT_ARGB);
         var numbersIterator = numbers.iterator();
         for (int row = 0; row < rowCount; row++) {
-            for (int column = 0; column < ROW_SIZE; column++) {
+            for (int column = 0; column < rowSize; column++) {
                 if (numbersIterator.hasNext()) {
                     String number = numbersIterator.next();
-                    String path = "/numbercards/" + number + ".jpg";
-                    File file = new File(getClass().getResource(path).getPath());
-                    BufferedImage image = null;
-                    try {
-                        image = ImageIO.read(file);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    File file = new File(NUMBERCARDS_DIR + number + JPG);
 
+                    BufferedImage image = ImageIO.read(file);
                     int x = column * IMAGE_WIDTH;
                     int y = row * IMAGE_HEIGHT;
                     page.createGraphics().drawImage(image, x, y, null);
@@ -57,11 +52,7 @@ public class ImageMerger {
             }
         }
 
-        File resultFile = new File(RESOURCES_DIR + "generated/generated.png");
-        File directory = new File(RESOURCES_DIR + "generated/");
-        if (!directory.exists()) {
-            directory.mkdir();
-        }
+        File resultFile = new File(GENERATED_DIR + "/generated.png");
         ImageIO.write(page, "PNG", resultFile);
 
         return resultFile;

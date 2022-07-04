@@ -8,4 +8,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class BotProperties {
     private String name;
     private String token;
+    private int chatId;
 }

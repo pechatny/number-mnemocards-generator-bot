@@ -14,8 +14,9 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
-import java.util.Objects;
 
 @Component
 public class MnemocardsGeneratorBot extends TelegramLongPollingBot {
@@ -24,7 +25,6 @@ public class MnemocardsGeneratorBot extends TelegramLongPollingBot {
     private final NumberSplitter splitter;
     private final ImageMerger imageMerger;
     private final BotProperties props;
-    private static final int CHAT_ID = 78477044;
 
     public MnemocardsGeneratorBot(
         NumberSplitter splitter,
@@ -42,11 +42,13 @@ public class MnemocardsGeneratorBot extends TelegramLongPollingBot {
         if (update.hasMessage()) {
             Long chatId = update.getMessage().getChatId();
             String message = update.getMessage().getText();
-            if (chatId == CHAT_ID && isNumeric(message)) {
+            if (chatId == props.getChatId()) {
                 List<String> numbers = splitter.split(message);
                 File mergedPhoto = imageMerger.mergeImages(numbers);
                 try {
                     execute(getSendPhotoCommand(update.getMessage().getChatId(), mergedPhoto));
+                    deleteFile(mergedPhoto);
+
                 } catch (TelegramApiException e) {
                     logger.error(e.getMessage(), e);
                 }
@@ -54,28 +56,20 @@ public class MnemocardsGeneratorBot extends TelegramLongPollingBot {
         }
     }
 
-
+    private void deleteFile(File mergedPhoto) throws IOException {
+        boolean deleted = Files.deleteIfExists(mergedPhoto.toPath());
+        if(deleted){
+            logger.info("File deleted: {}",  mergedPhoto.getName());
+        } else{
+            logger.error("Unable to delete file: {}", mergedPhoto.getName());
+        }
+    }
 
     private SendPhoto getSendPhotoCommand(Long chatId, File photo) {
         return new SendPhoto(
             String.valueOf(chatId),
             new InputFile(photo)
         );
-    }
-
-    private SendPhoto getSendPhotoCommand(Long chatId, String number) {
-        return new SendPhoto(
-            String.valueOf(chatId),
-            new InputFile(
-                new File(Objects.requireNonNull(
-                    getClass().getResource(getImageFilename(number))).getFile()
-                )
-            )
-        );
-    }
-
-    private String getImageFilename(String name) {
-        return "/numbercards/" + name + ".jpg";
     }
 
     @Override
@@ -86,17 +80,5 @@ public class MnemocardsGeneratorBot extends TelegramLongPollingBot {
     @Override
     public String getBotToken() {
         return props.getToken();
-    }
-
-    private static boolean isNumeric(String strNum) {
-        if (strNum == null) {
-            return false;
-        }
-        try {
-            Double.parseDouble(strNum);
-        } catch (NumberFormatException nfe) {
-            return false;
-        }
-        return true;
     }
 }

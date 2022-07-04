@@ -28,7 +28,9 @@ class AllNumbersSplitterTest {
             Arguments.of("9992223", new String[]{"999", "22", "23"}),
             Arguments.of("99", new String[]{"99"}),
             Arguments.of("9988", new String[]{"99", "88"}),
-            Arguments.of("999", new String[]{"999"})
+            Arguments.of("999", new String[]{"999"}),
+            Arguments.of("88 999 222 00 33 11", new String[]{"88", "999", "222", "00", "33", "11"}),
+            Arguments.of("+7 (999) 222 00-33", new String[]{"999", "222", "00", "33"})
         );
     }
 }
