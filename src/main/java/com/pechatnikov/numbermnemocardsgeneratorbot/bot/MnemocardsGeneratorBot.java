@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -41,6 +42,11 @@ public class MnemocardsGeneratorBot extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
         if (update.hasMessage()) {
             Long chatId = update.getMessage().getChatId();
+//            Chat chat = update.getMessage().getChat();
+//            String username = chat.getUserName();
+//            String firstname = chat.getFirstName();
+//            String lastname = chat.getLastName();
+
             String message = update.getMessage().getText();
             if (chatId == props.getChatId()) {
                 List<String> numbers = splitter.split(message);
