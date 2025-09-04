@@ -5,5 +5,16 @@ spring:
     active: ${ENVIRONMENT_PROFILE_NAME:dev}
   jpa:
     open-in-view: false
+  datasource:
+    url: jdbc:postgresql://localhost:5432/myapps
+    username: mnemobot
+    password: mnemobot
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    user: ${spring.datasource.username}
+    password: ${spring.datasource.password}
+    url: ${spring.datasource.url}
+    contexts: dev
 bot:
   name: NumberMnemocardsGeneratorBot

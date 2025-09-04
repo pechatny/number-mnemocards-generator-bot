@@ -1,6 +1,14 @@
 databaseChangeLog:
-  - changeSet:
-      id: initial-emptyVjj
-      author: d.pechatnikov
-      changes:
-        -  empty:  {}
+  # Версия формата Liquibase
+  - includeAll:
+      # Путь к папке с отдельными файлами изменений (относительно этого файла)
+      path: changes
+      # Сортировка файлов по имени (важно для порядка выполнения)
+      relativeToChangelogFile: true
+      errorIfMissingOrEmpty: true
+
+  # Альтернативный вариант - включать файлы вручную (если нужен строгий контроль порядка)
+  # - include:
+  #     file: db/changelog/changes/001-initial-schema.yaml
+  # - include:
+  #     file: db/changelog/changes/002-add-user-roles.yaml
