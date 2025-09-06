@@ -1,20 +1,21 @@
 spring:
-  config:
-    import: optional:secrets.properties
   profiles:
     active: ${ENVIRONMENT_PROFILE_NAME:dev}
   jpa:
     open-in-view: false
   datasource:
-    url: jdbc:postgresql://localhost:5432/myapps
-    username: mnemobot
-    password: mnemobot
+    driver-class-name: org.postgresql.Driver
+    url: ${DATASOURCE_URL}
+    username: ${DATASOURCE_USERNAME}
+    password: ${DATASOURCE_PASSWORD}
   liquibase:
     enabled: true
     change-log: classpath:db/changelog/db.changelog-master.yaml
     user: ${spring.datasource.username}
     password: ${spring.datasource.password}
     url: ${spring.datasource.url}
-    contexts: dev
+    contexts: prod,dev
 bot:
   name: NumberMnemocardsGeneratorBot
+  token: ${BOT_TOKEN}
+  chat-id: ${BOT_CHAT_ID}
