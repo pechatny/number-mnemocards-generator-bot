@@ -1,18 +1,22 @@
 package com.pechatnikov.numbermnemocardsgeneratorbot.service;
 
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.InputStream;
 import java.util.List;
 
+@Slf4j
 @Service
 public class ImageMerger {
-    private static final String RESOURCES_DIR = ImageMerger.class.getResource("/").getPath();
-    private static final String NUMBERCARDS_DIR = ImageMerger.class.getResource("/numbercards/").getPath();
-    private static final String GENERATED_DIR = RESOURCES_DIR + "generated/";
+    private static final String NUMBERCARDS_DIR = "numbercards/";
+    private static final String GENERATED_DIR =  "generated/";
     private static final int IMAGE_WIDTH = 441;
     private static final int IMAGE_HEIGHT = 677;
     public static final String JPG = ".jpg";
@@ -42,12 +46,16 @@ public class ImageMerger {
             for (int column = 0; column < rowSize; column++) {
                 if (numbersIterator.hasNext()) {
                     String number = numbersIterator.next();
-                    File file = new File(NUMBERCARDS_DIR + number + JPG);
+                    String imagePath = NUMBERCARDS_DIR + number + JPG;
+                    log.debug("Путь к файлу: %s", imagePath );
+                    Resource resource = new ClassPathResource(imagePath);
 
-                    BufferedImage image = ImageIO.read(file);
-                    int x = column * IMAGE_WIDTH;
-                    int y = row * IMAGE_HEIGHT;
-                    page.createGraphics().drawImage(image, x, y, null);
+                    try (InputStream inputStream = resource.getInputStream()) {
+                        BufferedImage image = ImageIO.read(inputStream);
+                        int x = column * IMAGE_WIDTH;
+                        int y = row * IMAGE_HEIGHT;
+                        page.createGraphics().drawImage(image, x, y, null);
+                    }
                 }
             }
         }
