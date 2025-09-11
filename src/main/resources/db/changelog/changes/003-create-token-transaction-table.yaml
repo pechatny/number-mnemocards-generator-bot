@@ -1,0 +1,47 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003-create-token-transaction-table
+      author: dpechatnikov
+      changes:
+        - createTable:
+            tableName: token_transaction
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: message_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: count
+                  type: bigint
+                  constraints:
+                    nullable: false
+                  defaultValue: 0
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+        - addForeignKeyConstraint:
+            baseTableName: token_transaction
+            baseColumnNames: user_id
+            referencedTableName: user
+            referencedColumnNames: id
+            constraintName: fk_token_balance_user
+        - addForeignKeyConstraint:
+            baseTableName: token_transaction
+            baseColumnNames: message_id
+            referencedTableName: message
+            referencedColumnNames: id
+            constraintName: fk_token_transaction_message
