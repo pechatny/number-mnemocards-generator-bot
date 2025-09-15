@@ -1,15 +1,16 @@
 package com.pechatnikov.numbermnemocardsgeneratorbot.bot;
 
+import com.pechatnikov.numbermnemocardsgeneratorbot.entity.User;
 import com.pechatnikov.numbermnemocardsgeneratorbot.config.BotProperties;
 import com.pechatnikov.numbermnemocardsgeneratorbot.service.ImageMerger;
 import com.pechatnikov.numbermnemocardsgeneratorbot.service.NumberSplitter;
+import com.pechatnikov.numbermnemocardsgeneratorbot.service.UserService;
 import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
-import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -26,21 +27,25 @@ public class MnemocardsGeneratorBot extends TelegramLongPollingBot {
     private final NumberSplitter splitter;
     private final ImageMerger imageMerger;
     private final BotProperties props;
+    private final UserService userService;
 
     public MnemocardsGeneratorBot(
         NumberSplitter splitter,
         ImageMerger imageMerger,
-        BotProperties props
+        BotProperties props,
+        UserService userService
     ) {
         this.splitter = splitter;
         this.imageMerger = imageMerger;
         this.props = props;
+        this.userService = userService;
     }
 
     @SneakyThrows
     @Override
     public void onUpdateReceived(Update update) {
         if (update.hasMessage()) {
+//            User user = userService.getOrCreate(update);
             Long chatId = update.getMessage().getChatId();
 //            Chat chat = update.getMessage().getChat();
 //            String username = chat.getUserName();
@@ -64,9 +69,9 @@ public class MnemocardsGeneratorBot extends TelegramLongPollingBot {
 
     private void deleteFile(File mergedPhoto) throws IOException {
         boolean deleted = Files.deleteIfExists(mergedPhoto.toPath());
-        if(deleted){
-            logger.info("File deleted: {}",  mergedPhoto.getName());
-        } else{
+        if (deleted) {
+            logger.info("File deleted: {}", mergedPhoto.getName());
+        } else {
             logger.error("Unable to delete file: {}", mergedPhoto.getName());
         }
     }
