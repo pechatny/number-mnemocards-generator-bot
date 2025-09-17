@@ -1,5 +1,6 @@
-package com.pechatnikov.numbermnemocardsgeneratorbot.service;
+package com.pechatnikov.numbermnemocardsgeneratorbot.application.service;
 
+import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.Splitter;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

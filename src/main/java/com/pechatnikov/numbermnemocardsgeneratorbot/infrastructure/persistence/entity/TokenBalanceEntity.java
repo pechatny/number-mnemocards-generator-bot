@@ -1,4 +1,4 @@
-package com.pechatnikov.numbermnemocardsgeneratorbot.entity;
+package com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.persistence.entity;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -11,7 +11,7 @@ import java.time.Instant;
 @Setter
 @Entity
 @Table(name = "token_balance")
-public class TokenBalance {
+public class TokenBalanceEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -20,7 +20,7 @@ public class TokenBalance {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private UserEntity userEntity;
 
     @NotNull
     @Column(name = "balance", nullable = false)

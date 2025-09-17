@@ -1,7 +1,8 @@
 package com.pechatnikov.numbermnemocardsgeneratorbot.repository;
 
 import com.pechatnikov.numbermnemocardsgeneratorbot.BaseIntegrationTest;
-import com.pechatnikov.numbermnemocardsgeneratorbot.entity.User;
+import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.persistence.entity.UserEntity;
+import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.persistence.jpa.SpringDataUserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,10 +17,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
-public class UserRepositoryTest extends BaseIntegrationTest {
+public class UserEntityRepositoryTest extends BaseIntegrationTest {
 
     @Autowired
-    private UserRepository userRepository;
+    private SpringDataUserRepository springDataUserRepository;
 
     @Autowired
     private EntityManager entityManager;
@@ -28,8 +29,8 @@ public class UserRepositoryTest extends BaseIntegrationTest {
     void shouldSaveAndFindUser() {
         String USERNAME = "motherfucker";
         // Given
-        User user = User.builder()
-                .chatId(1L)
+        UserEntity userEntity = UserEntity.builder()
+                .telegramId(1L)
                 .username(USERNAME)
                 .firstname("name")
                 .lastname("idont tell you")
@@ -38,12 +39,12 @@ public class UserRepositoryTest extends BaseIntegrationTest {
 
 
         // When
-        User savedUser = userRepository.save(user);
+        UserEntity savedUserEntity = springDataUserRepository.save(userEntity);
         entityManager.flush();
         entityManager.clear();
 
         // Then
-        Optional<User> foundUser = userRepository.findById(savedUser.getId());
+        Optional<UserEntity> foundUser = springDataUserRepository.findById(savedUserEntity.getId());
         assertThat(foundUser).isPresent();
         assertThat(foundUser.get().getUsername()).isEqualTo(USERNAME);
     }

@@ -1,4 +1,4 @@
-package com.pechatnikov.numbermnemocardsgeneratorbot.entity;
+package com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.persistence.entity;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -12,7 +12,7 @@ import java.time.Instant;
 @Setter
 @Entity
 @Table(name = "message")
-public class Message {
+public class MessageEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -21,7 +21,7 @@ public class Message {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private UserEntity userEntity;
 
     @Column(name = "message")
     @Type(type = "org.hibernate.type.TextType")

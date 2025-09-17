@@ -1,4 +1,4 @@
-package com.pechatnikov.numbermnemocardsgeneratorbot.config;
+package com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.configuration;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

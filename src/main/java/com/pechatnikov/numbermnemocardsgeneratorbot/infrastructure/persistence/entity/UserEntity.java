@@ -1,4 +1,4 @@
-package com.pechatnikov.numbermnemocardsgeneratorbot.entity;
+package com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.persistence.entity;
 
 import lombok.*;
 
@@ -13,26 +13,23 @@ import java.time.Instant;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Table(name = "\"user\"")
-public class User {
+public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
     @NotNull
-    @Column(name = "chat_id", nullable = false)
-    private Long chatId;
+    @Column(name = "telegram_id", nullable = false)
+    private Long telegramId;
 
     @NotNull
-    @Lob
     @Column(name = "username", nullable = false)
     private String username;
 
-    @Lob
     @Column(name = "firstname")
     private String firstname;
 
-    @Lob
     @Column(name = "lastname")
     private String lastname;
 

@@ -1,10 +1,9 @@
 package com.pechatnikov.numbermnemocardsgeneratorbot.service;
 
+import com.pechatnikov.numbermnemocardsgeneratorbot.application.service.ImageMerger;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class ImageMergerTest {
 

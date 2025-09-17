@@ -14,7 +14,7 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: chat_id
+                  name: telegram_id
                   type: bigint
                   constraints:
                     nullable: false

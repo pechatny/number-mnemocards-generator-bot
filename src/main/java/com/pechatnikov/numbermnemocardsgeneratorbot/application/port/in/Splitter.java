@@ -1,4 +1,4 @@
-package com.pechatnikov.numbermnemocardsgeneratorbot.service;
+package com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in;
 
 import java.util.List;
 

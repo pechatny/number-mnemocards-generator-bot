@@ -1,4 +1,4 @@
-package com.pechatnikov.numbermnemocardsgeneratorbot.service;
+package com.pechatnikov.numbermnemocardsgeneratorbot.application.service;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +11,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.InputStream;
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -60,7 +61,7 @@ public class ImageMerger {
             }
         }
 
-        File resultFile = new File(GENERATED_DIR + "/generated.png");
+        File resultFile = new File(GENERATED_DIR + "/" + UUID.randomUUID() + "-generated.png");
         ImageIO.write(page, "PNG", resultFile);
 
         return resultFile;
