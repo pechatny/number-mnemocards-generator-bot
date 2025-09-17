@@ -401,7 +401,7 @@
 										<UML:TaggedValue tag="lineStyle" value="0"/>
 										<UML:TaggedValue tag="ea_localid" value="45"/>
 										<UML:TaggedValue tag="ea_sourceName" value="message"/>
-										<UML:TaggedValue tag="ea_targetName" value="user"/>
+										<UML:TaggedValue tag="ea_targetName" value="userEntity"/>
 										<UML:TaggedValue tag="ea_sourceType" value="Class"/>
 										<UML:TaggedValue tag="ea_targetType" value="Class"/>
 										<UML:TaggedValue tag="ea_sourceID" value="78"/>
@@ -783,7 +783,7 @@
 										<UML:TaggedValue tag="lineStyle" value="0"/>
 										<UML:TaggedValue tag="ea_localid" value="47"/>
 										<UML:TaggedValue tag="ea_sourceName" value="token_transaction"/>
-										<UML:TaggedValue tag="ea_targetName" value="user"/>
+										<UML:TaggedValue tag="ea_targetName" value="userEntity"/>
 										<UML:TaggedValue tag="ea_sourceType" value="Class"/>
 										<UML:TaggedValue tag="ea_targetType" value="Class"/>
 										<UML:TaggedValue tag="ea_sourceID" value="80"/>
@@ -814,7 +814,7 @@
 										</UML:AssociationEnd>
 									</UML:Association.connection>
 								</UML:Association>
-								<UML:Class name="user" xmi.id="EAID_5835342A_7C26_436f_B0BB_6BEBC308F845" visibility="public" namespace="EAPK_1D024ADA_867D_4679_A153_42015F26E662" isRoot="false" isLeaf="false" isAbstract="false" isActive="false">
+								<UML:Class name="userEntity" xmi.id="EAID_5835342A_7C26_436f_B0BB_6BEBC308F845" visibility="public" namespace="EAPK_1D024ADA_867D_4679_A153_42015F26E662" isRoot="false" isLeaf="false" isAbstract="false" isActive="false">
 									<UML:ModelElement.stereotype>
 										<UML:Stereotype name="table"/>
 									</UML:ModelElement.stereotype>
@@ -1095,7 +1095,7 @@
 										<UML:TaggedValue tag="conditional" value=" &#xA;«FK»"/>
 										<UML:TaggedValue tag="ea_localid" value="48"/>
 										<UML:TaggedValue tag="ea_sourceName" value="token_amount"/>
-										<UML:TaggedValue tag="ea_targetName" value="user"/>
+										<UML:TaggedValue tag="ea_targetName" value="userEntity"/>
 										<UML:TaggedValue tag="ea_sourceType" value="Class"/>
 										<UML:TaggedValue tag="ea_targetType" value="Class"/>
 										<UML:TaggedValue tag="ea_sourceID" value="81"/>
@@ -1144,7 +1144,7 @@
 										<UML:TaggedValue tag="lineStyle" value="0"/>
 										<UML:TaggedValue tag="ea_localid" value="46"/>
 										<UML:TaggedValue tag="ea_sourceName" value="payment_transaction"/>
-										<UML:TaggedValue tag="ea_targetName" value="user"/>
+										<UML:TaggedValue tag="ea_targetName" value="userEntity"/>
 										<UML:TaggedValue tag="ea_sourceType" value="Class"/>
 										<UML:TaggedValue tag="ea_targetType" value="Class"/>
 										<UML:TaggedValue tag="ea_sourceID" value="79"/>
