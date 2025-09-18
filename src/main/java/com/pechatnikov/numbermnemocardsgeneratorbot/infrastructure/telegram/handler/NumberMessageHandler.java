@@ -15,12 +15,12 @@ import java.util.List;
 
 @Slf4j
 @Component
-public class MessageHandler {
+public class NumberMessageHandler {
     private final BotProperties props;
     private final NumberSplitter splitter;
     private final ImageMerger imageMerger;
 
-    public MessageHandler(BotProperties props, NumberSplitter splitter, ImageMerger imageMerger) {
+    public NumberMessageHandler(BotProperties props, NumberSplitter splitter, ImageMerger imageMerger) {
         this.props = props;
         this.splitter = splitter;
         this.imageMerger = imageMerger;

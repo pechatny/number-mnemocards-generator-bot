@@ -4,7 +4,7 @@ import com.pechatnikov.numbermnemocardsgeneratorbot.application.mapper.TelegramU
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.UserService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.service.UserServiceImpl;
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.configuration.BotProperties;
-import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram.handler.MessageHandler;
+import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram.handler.NumberMessageHandler;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -28,18 +28,18 @@ public class MnemocardsGeneratorBot extends TelegramLongPollingBot {
     private final BotProperties props;
     private final UserService userService;
     private final ExecutorService executorService;
-    private final MessageHandler messageHandler;
+    private final NumberMessageHandler numberMessageHandler;
     private final TelegramUpdateMapper telegramUpdateMapper;
 
     public MnemocardsGeneratorBot(
         BotProperties props,
         UserServiceImpl userService,
-        MessageHandler messageHandler,
+        NumberMessageHandler numberMessageHandler,
         TelegramUpdateMapper telegramUpdateMapper
     ) {
         this.props = props;
         this.userService = userService;
-        this.messageHandler = messageHandler;
+        this.numberMessageHandler = numberMessageHandler;
         this.telegramUpdateMapper = telegramUpdateMapper;
         this.executorService = Executors.newFixedThreadPool(10); // Пул потоков для обработки
     }
@@ -56,7 +56,7 @@ public class MnemocardsGeneratorBot extends TelegramLongPollingBot {
             telegramUpdateMapper.toGetOrCreateUserCommand(update)
         );
         try {
-            if (update.hasMessage() && update.getMessage().hasText()) {
+            if (containsDigits(update)) {
                 handleNumericMessage(update);
 //            } else if (update.hasCallbackQuery()) {
 //                handleCallbackQuery(update);
@@ -70,6 +70,16 @@ public class MnemocardsGeneratorBot extends TelegramLongPollingBot {
         } catch (Exception e) {
             log.error("Error processing update: {}", update.getUpdateId(), e);
             handleError(update, e);
+        }
+    }
+
+    private boolean containsDigits(Update update) {
+        if (update.hasMessage() && update.getMessage().hasText()) {
+            String text = update.getMessage().getText();
+
+            return text.matches(".*\\d.*");
+        } else {
+            return false;
         }
     }
 
@@ -87,7 +97,7 @@ public class MnemocardsGeneratorBot extends TelegramLongPollingBot {
 
     private void handleNumericMessage(Update update) {
         try {
-            SendPhoto response = messageHandler.handleMessage(update);
+            SendPhoto response = numberMessageHandler.handleMessage(update);
             if (response != null) {
                 sendPhotoSafely(response);
                 deleteFile(response.getPhoto().getNewMediaFile());
