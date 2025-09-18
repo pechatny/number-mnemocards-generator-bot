@@ -1,8 +1,10 @@
 package com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram;
 
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.mapper.TelegramUpdateMapper;
+import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.MessageService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.UserService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.service.UserServiceImpl;
+import com.pechatnikov.numbermnemocardsgeneratorbot.domain.Message;
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.configuration.BotProperties;
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram.handler.NumberMessageHandler;
 import lombok.SneakyThrows;
@@ -27,18 +29,20 @@ import java.util.concurrent.Executors;
 public class MnemocardsGeneratorBot extends TelegramLongPollingBot {
     private final BotProperties props;
     private final UserService userService;
+    private final MessageService messageService;
     private final ExecutorService executorService;
     private final NumberMessageHandler numberMessageHandler;
     private final TelegramUpdateMapper telegramUpdateMapper;
 
     public MnemocardsGeneratorBot(
         BotProperties props,
-        UserServiceImpl userService,
+        UserServiceImpl userService, MessageService messageService,
         NumberMessageHandler numberMessageHandler,
         TelegramUpdateMapper telegramUpdateMapper
     ) {
         this.props = props;
         this.userService = userService;
+        this.messageService = messageService;
         this.numberMessageHandler = numberMessageHandler;
         this.telegramUpdateMapper = telegramUpdateMapper;
         this.executorService = Executors.newFixedThreadPool(10); // Пул потоков для обработки
@@ -52,9 +56,17 @@ public class MnemocardsGeneratorBot extends TelegramLongPollingBot {
     }
 
     private void processUpdate(Update update) {
-        userService.getOrCreateUser(
+        var user = userService.getOrCreateUser(
             telegramUpdateMapper.toGetOrCreateUserCommand(update)
         );
+
+        // TODO куда-то это вынести
+        var message = Message.builder()
+            .message(update.getMessage().getText())
+            .user(user)
+            .build();
+        messageService.save(message);
+
         try {
             if (containsDigits(update)) {
                 handleNumericMessage(update);
