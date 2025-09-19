@@ -1,6 +1,5 @@
 package com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.persistence.mapper;
 
-import com.pechatnikov.numbermnemocardsgeneratorbot.application.mapper.UserPersistenceMapper;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.Message;
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.persistence.entity.MessageEntity;
 import org.mapstruct.Mapper;

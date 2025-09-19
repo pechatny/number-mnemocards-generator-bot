@@ -1,6 +1,6 @@
 package com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.persistence.adapter;
 
-import com.pechatnikov.numbermnemocardsgeneratorbot.application.mapper.UserPersistenceMapper;
+import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.persistence.mapper.UserPersistenceMapper;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.UserRepositoryPort;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.User;
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.persistence.jpa.SpringDataUserRepository;

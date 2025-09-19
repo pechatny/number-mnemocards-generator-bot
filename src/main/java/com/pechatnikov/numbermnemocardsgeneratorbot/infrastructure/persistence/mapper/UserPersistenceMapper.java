@@ -1,4 +1,4 @@
-package com.pechatnikov.numbermnemocardsgeneratorbot.application.mapper;
+package com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.persistence.mapper;
 
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.User;
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.persistence.entity.UserEntity;

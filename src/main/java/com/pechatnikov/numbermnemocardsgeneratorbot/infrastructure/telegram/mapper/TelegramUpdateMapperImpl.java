@@ -1,7 +1,7 @@
 package com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram.mapper;
 
-import com.pechatnikov.numbermnemocardsgeneratorbot.application.mapper.TelegramUpdateMapper;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.GetOrCreateUserCommand;
+import com.pechatnikov.numbermnemocardsgeneratorbot.domain.Message;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -22,6 +22,18 @@ public class TelegramUpdateMapperImpl implements TelegramUpdateMapper {
             .setUsername(telegramUser.getUserName())
             .build();
     }
+
+    @Override
+    public Message toMessage(Update update, com.pechatnikov.numbermnemocardsgeneratorbot.domain.User user) {
+        Message.MessageBuilder messageBuilder = Message.builder();
+        if (update.hasMessage() && update.getMessage().hasText()) {
+            messageBuilder.message(update.getMessage().getText());
+        }
+        messageBuilder.user(user);
+
+        return messageBuilder.build();
+    }
+
     private User extractTelegramUser(Update update) {
         try {
             if (update.hasMessage() && update.getMessage().getFrom() != null) {

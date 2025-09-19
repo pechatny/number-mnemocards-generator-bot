@@ -1,12 +1,11 @@
 package com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram;
 
-import com.pechatnikov.numbermnemocardsgeneratorbot.application.mapper.TelegramUpdateMapper;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.MessageService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.UserService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.service.UserServiceImpl;
-import com.pechatnikov.numbermnemocardsgeneratorbot.domain.Message;
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.configuration.BotProperties;
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram.handler.NumberMessageHandler;
+import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram.mapper.TelegramUpdateMapper;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -60,12 +59,9 @@ public class MnemocardsGeneratorBot extends TelegramLongPollingBot {
             telegramUpdateMapper.toGetOrCreateUserCommand(update)
         );
 
-        // TODO куда-то это вынести
-        var message = Message.builder()
-            .message(update.getMessage().getText())
-            .user(user)
-            .build();
-        messageService.save(message);
+        messageService.save(
+            telegramUpdateMapper.toMessage(update, user)
+        );
 
         try {
             if (containsDigits(update)) {
