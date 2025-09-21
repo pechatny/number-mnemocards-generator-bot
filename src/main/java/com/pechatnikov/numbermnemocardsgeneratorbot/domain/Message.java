@@ -4,11 +4,13 @@ public class Message {
     private final Long id;
     private final User user;
     private final String message;
+    private final Long chatId;
 
-    private Message(Long id, User user, String message) {
+    private Message(Long id, User user, String message, Long chatId) {
         this.id = id;
         this.user = user;
         this.message = message;
+        this.chatId = chatId;
     }
 
     public Long getId() {
@@ -23,6 +25,10 @@ public class Message {
         return message;
     }
 
+    public Long getChatId() {
+        return chatId;
+    }
+
     public static MessageBuilder builder() {
         return new MessageBuilder();
     }
@@ -31,6 +37,7 @@ public class Message {
         private Long id;
         private User user;
         private String message;
+        private Long chatId;
 
         private MessageBuilder() {}
 
@@ -49,8 +56,13 @@ public class Message {
             return this;
         }
 
+        public MessageBuilder chatId(Long chatId) {
+            this.chatId = chatId;
+            return this;
+        }
+
         public Message build() {
-            return new Message(this.id, this.user, this.message);
+            return new Message(this.id, this.user, this.message, this.chatId);
         }
     }
 }

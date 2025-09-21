@@ -11,11 +11,13 @@ public interface MessagePersistenceMapper {
     @Mapping(target = "id", source = "id")
     @Mapping(target = "message", source = "message")
     @Mapping(target = "user", source = "user")
+    @Mapping(target = "chatId", source = "chatId")
     MessageEntity toEntity(Message message);
 
     @Mapping(target = "id", source = "id")
     @Mapping(target = "message", source = "message")
     @Mapping(target = "user", source = "user")
+    @Mapping(target = "chatId", source = "chatId")
     Message toDomain(MessageEntity messageEntity);
 
 }

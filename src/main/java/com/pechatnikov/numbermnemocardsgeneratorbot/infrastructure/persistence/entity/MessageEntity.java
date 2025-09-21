@@ -30,6 +30,9 @@ public class MessageEntity {
     @Type(type = "org.hibernate.type.TextType")
     private String message;
 
+    @Column(name = "chat_id")
+    private Long chatId;
+
     @CreatedDate
     @Column(name = "created_at")
     private Instant createdAt;
