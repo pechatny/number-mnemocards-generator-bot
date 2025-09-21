@@ -1,6 +1,6 @@
 ﻿# build-and-publish-to-dockerhub.ps1
 param(
-    [string]$Version = "2.0.4",
+    [string]$Version = "2.1.0",
     [string]$AppName = "number-mnemocards-generator-bot"
 )
 
