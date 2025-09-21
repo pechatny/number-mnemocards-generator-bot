@@ -2,6 +2,7 @@ package com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram.map
 
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.GetOrCreateUserCommand;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.Message;
+import org.mapstruct.Mapping;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 public interface TelegramUpdateMapper {

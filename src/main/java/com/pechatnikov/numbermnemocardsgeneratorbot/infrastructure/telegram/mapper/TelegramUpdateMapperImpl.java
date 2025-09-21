@@ -29,6 +29,11 @@ public class TelegramUpdateMapperImpl implements TelegramUpdateMapper {
         if (update.hasMessage() && update.getMessage().hasText()) {
             messageBuilder.message(update.getMessage().getText());
         }
+
+        if (update.hasMessage()) {
+            messageBuilder.chatId(update.getMessage().getChatId());
+        }
+
         messageBuilder.user(user);
 
         return messageBuilder.build();

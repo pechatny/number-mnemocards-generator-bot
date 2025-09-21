@@ -33,13 +33,21 @@ public class Message {
         return new MessageBuilder();
     }
 
+    public static MessageBuilder toBuilder(Message message) {
+        return new MessageBuilder()
+            .user(message.user)
+            .chatId(message.getChatId())
+            .message(message.getMessage());
+    }
+
     public static final class MessageBuilder {
         private Long id;
         private User user;
         private String message;
         private Long chatId;
 
-        private MessageBuilder() {}
+        private MessageBuilder() {
+        }
 
         public MessageBuilder id(Long id) {
             this.id = id;

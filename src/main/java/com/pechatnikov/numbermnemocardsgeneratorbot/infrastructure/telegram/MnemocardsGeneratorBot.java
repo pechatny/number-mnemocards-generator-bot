@@ -1,10 +1,7 @@
 package com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram;
 
-import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.MessageService;
-import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.UserService;
-import com.pechatnikov.numbermnemocardsgeneratorbot.application.service.UserServiceImpl;
+import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.NumericMessageHandler;
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.configuration.BotProperties;
-import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram.handler.NumberMessageHandler;
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram.mapper.TelegramUpdateMapper;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -13,13 +10,9 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -27,22 +20,17 @@ import java.util.concurrent.Executors;
 @Component
 public class MnemocardsGeneratorBot extends TelegramLongPollingBot {
     private final BotProperties props;
-    private final UserService userService;
-    private final MessageService messageService;
     private final ExecutorService executorService;
-    private final NumberMessageHandler numberMessageHandler;
     private final TelegramUpdateMapper telegramUpdateMapper;
+    private final NumericMessageHandler numericMessageHandler;
 
     public MnemocardsGeneratorBot(
         BotProperties props,
-        UserServiceImpl userService, MessageService messageService,
-        NumberMessageHandler numberMessageHandler,
-        TelegramUpdateMapper telegramUpdateMapper
+        TelegramUpdateMapper telegramUpdateMapper,
+        NumericMessageHandler numericMessageHandler
     ) {
         this.props = props;
-        this.userService = userService;
-        this.messageService = messageService;
-        this.numberMessageHandler = numberMessageHandler;
+        this.numericMessageHandler = numericMessageHandler;
         this.telegramUpdateMapper = telegramUpdateMapper;
         this.executorService = Executors.newFixedThreadPool(10); // Пул потоков для обработки
     }
@@ -55,14 +43,6 @@ public class MnemocardsGeneratorBot extends TelegramLongPollingBot {
     }
 
     private void processUpdate(Update update) {
-        var user = userService.getOrCreateUser(
-            telegramUpdateMapper.toGetOrCreateUserCommand(update)
-        );
-
-        messageService.save(
-            telegramUpdateMapper.toMessage(update, user)
-        );
-
         try {
             if (containsDigits(update)) {
                 handleNumericMessage(update);
@@ -105,23 +85,13 @@ public class MnemocardsGeneratorBot extends TelegramLongPollingBot {
 
     private void handleNumericMessage(Update update) {
         try {
-            SendPhoto response = numberMessageHandler.handleMessage(update);
-            if (response != null) {
-                sendPhotoSafely(response);
-                deleteFile(response.getPhoto().getNewMediaFile());
-            }
+            numericMessageHandler.handle(
+                telegramUpdateMapper.toGetOrCreateUserCommand(update),
+                telegramUpdateMapper.toMessage(update, null)
+            );
         } catch (Exception e) {
             log.error("Error handling text message", e);
             sendErrorMessage(update.getMessage().getChatId(), "Ошибка обработки сообщения");
-        }
-    }
-
-    private void deleteFile(File mergedPhoto) throws IOException {
-        boolean deleted = Files.deleteIfExists(mergedPhoto.toPath());
-        if (deleted) {
-            log.info("File deleted: {}", mergedPhoto.getName());
-        } else {
-            log.error("Unable to delete file: {}", mergedPhoto.getName());
         }
     }
 
@@ -171,15 +141,6 @@ public class MnemocardsGeneratorBot extends TelegramLongPollingBot {
             log.error("Failed to execute BotApiMethod: {}", method, e);
         }
     }
-
-    private void sendPhotoSafely(SendPhoto method) {
-        try {
-            execute(method);
-        } catch (TelegramApiException e) {
-            log.error("Failed to execute SendPhoto: {}", method, e);
-        }
-    }
-
 
     @Override
     public String getBotUsername() {
