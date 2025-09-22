@@ -35,7 +35,7 @@ public class TokenBalanceEntity {
     private Instant updatedAt;
 
     @CreatedDate
-    @Column(name = "created_at")
+    @Column(name = "created_at", updatable = false)
     private Instant createdAt;
 
 }

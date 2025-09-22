@@ -6,9 +6,12 @@ import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.NumericM
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.TokenBalanceService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.TokenTransactionService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.UserService;
+import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.SendMessageService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.SendPhotoService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.Message;
+import com.pechatnikov.numbermnemocardsgeneratorbot.domain.TokenBalance;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.TokenTransaction;
+import com.pechatnikov.numbermnemocardsgeneratorbot.domain.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +23,8 @@ import java.util.List;
 @Slf4j
 @Service
 public class NumericMessageHandlerImpl implements NumericMessageHandler {
+    private final static String NOT_ENOUGH_TOKENS_MESSAGE = "Ваше число состоит из %d цифр. Вам доступно %d цифр";
+
     private final UserService userService;
     private final MessageService messageService;
     private final NumberSplitter splitter;
@@ -27,8 +32,9 @@ public class NumericMessageHandlerImpl implements NumericMessageHandler {
     private final SendPhotoService sendPhotoService;
     private final TokenTransactionService tokenTransactionService;
     private final TokenBalanceService tokenBalanceService;
+    private final SendMessageService sendMessageService;
 
-    public NumericMessageHandlerImpl(UserService userService, MessageService messageService, NumberSplitter splitter, ImageMerger imageMerger, SendPhotoService sendPhotoService, TokenTransactionService tokenTransactionService, TokenBalanceService tokenBalanceService) {
+    public NumericMessageHandlerImpl(UserService userService, MessageService messageService, NumberSplitter splitter, ImageMerger imageMerger, SendPhotoService sendPhotoService, TokenTransactionService tokenTransactionService, TokenBalanceService tokenBalanceService, SendMessageService sendMessageService) {
         this.userService = userService;
         this.messageService = messageService;
         this.splitter = splitter;
@@ -36,6 +42,7 @@ public class NumericMessageHandlerImpl implements NumericMessageHandler {
         this.sendPhotoService = sendPhotoService;
         this.tokenTransactionService = tokenTransactionService;
         this.tokenBalanceService = tokenBalanceService;
+        this.sendMessageService = sendMessageService;
     }
 
     @Override
@@ -47,8 +54,16 @@ public class NumericMessageHandlerImpl implements NumericMessageHandler {
         log.info("Сохранить сообщение");
         message = messageService.save(messageWithUser);
 
-        log.info("Создать картинку");
+        log.info("Расчет токенов");
         List<String> splittedNumberList = splitter.split(message.getMessage());
+        long countedTokens = countTokens(splittedNumberList);
+        log.info("Необходимо {} токенов", countedTokens);
+
+        if (checkTokenBalance(message, user, countedTokens)) {
+            return;
+        }
+
+        log.info("Создать картинку");
         var file = imageMerger.mergeImages(splittedNumberList);
 
         log.info("Отправить ответ");
@@ -61,13 +76,25 @@ public class NumericMessageHandlerImpl implements NumericMessageHandler {
         var tokenTransaction = TokenTransaction.builder()
             .user(user)
             .message(message)
-            .count(countTokens(splittedNumberList))
+            .count(countedTokens)
             .build();
 
         tokenTransaction = tokenTransactionService.save(tokenTransaction);
 
         log.info("Уменьшить баланс токенов пользователя");
         tokenBalanceService.decrease(tokenTransaction);
+    }
+
+    private boolean checkTokenBalance(Message message, User user, long countedTokens) {
+        TokenBalance tokenBalance = tokenBalanceService.findOrCreateTokenBalanceForUser(user);
+        if (tokenBalance.getBalance() < countedTokens) {
+            String notEnoughTokensMessage = String.format(NOT_ENOUGH_TOKENS_MESSAGE, countedTokens, tokenBalance.getBalance());
+            log.info(notEnoughTokensMessage);
+            sendMessageService.sendMessage(message.getChatId(), notEnoughTokensMessage);
+
+            return true;
+        }
+        return false;
     }
 
     private long countTokens(List<String> numberList) {

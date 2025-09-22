@@ -10,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class TokenBalanceServiceImpl implements TokenBalanceService {
+    public static final long NEW_USER_INIT_TOKENS = 100L;
+
     private final TokenBalanceRepositoryPort tokenBalanceRepositoryPort;
 
     public TokenBalanceServiceImpl(TokenBalanceRepositoryPort tokenBalanceRepositoryPort) {
@@ -18,6 +20,14 @@ public class TokenBalanceServiceImpl implements TokenBalanceService {
 
     private void save(TokenBalance tokenBalance) {
         tokenBalanceRepositoryPort.save(tokenBalance);
+    }
+
+    @Override
+    @Transactional
+    public TokenBalance findOrCreateTokenBalanceForUser(User user) {
+        return tokenBalanceRepositoryPort
+            .findByUserId(user.getId())
+            .orElse(newTokenBalance(user));
     }
 
     @Override
@@ -43,7 +53,7 @@ public class TokenBalanceServiceImpl implements TokenBalanceService {
         save(tokenBalanceForUpdate);
     }
 
-    private TokenBalance getTokenBalanceByTransaction( TokenTransaction tokenTransaction) {
+    private TokenBalance getTokenBalanceByTransaction(TokenTransaction tokenTransaction) {
         return tokenBalanceRepositoryPort
             .findByUserId(tokenTransaction.getUser().getId())
             .orElse(newTokenBalance(tokenTransaction.getUser()));
@@ -51,7 +61,7 @@ public class TokenBalanceServiceImpl implements TokenBalanceService {
 
     private TokenBalance newTokenBalance(User user) {
         return TokenBalance.builder()
-            .balance(0L)
+            .balance(NEW_USER_INIT_TOKENS)
             .user(user)
             .build();
     }

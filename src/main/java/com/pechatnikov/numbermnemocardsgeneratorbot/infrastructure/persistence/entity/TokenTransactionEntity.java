@@ -44,7 +44,7 @@ public class TokenTransactionEntity {
     private Long count;
 
     @CreatedDate
-    @Column(name = "created_at")
+    @Column(name = "created_at", updatable = false)
     private Instant createdAt;
 
 }
