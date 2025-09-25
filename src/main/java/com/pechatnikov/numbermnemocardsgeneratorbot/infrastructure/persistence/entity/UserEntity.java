@@ -36,6 +36,9 @@ public class UserEntity {
     @Column(name = "lastname")
     private String lastname;
 
+    @Column(name = "state")
+    private String state;
+
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     private Instant createdAt;

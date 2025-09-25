@@ -8,10 +8,10 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface UserPersistenceMapperImpl extends UserPersistenceMapper {
     @Override
-    @Mapping(source = "entity", target = ".", qualifiedByName = "mapEntityToDomain")
+    @Mapping(source = "entity", target = ".")
     User toDomain(UserEntity entity);
 
     @Override
-    @Mapping(source = "domain", target = ".", qualifiedByName = "mapDomainToEntity")
+    @Mapping(source = "domain", target = ".")
     UserEntity toEntity(User domain);
 }

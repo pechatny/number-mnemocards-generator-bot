@@ -6,13 +6,15 @@ public class User {
     private final String username;
     private final String firstname;
     private final String lastname;
+    private final UserState state;
 
-    private User(Long id, Long telegramId, String username, String firstname, String lastname) {
+    private User(Long id, Long telegramId, String username, String firstname, String lastname, UserState state) {
         this.id = id;
         this.telegramId = telegramId;
         this.username = username;
         this.firstname = firstname;
         this.lastname = lastname;
+        this.state = state;
     }
 
     public static UserBuilder builder() {
@@ -25,6 +27,7 @@ public class User {
         private String username;
         private String firstname;
         private String lastname;
+        private UserState state;
 
         public UserBuilder setId(Long id) {
             this.id = id;
@@ -51,8 +54,13 @@ public class User {
             return this;
         }
 
+        public UserBuilder setState(UserState state) {
+            this.state = state;
+            return this;
+        }
+
         public User build() {
-            return new User(id, telegramId, username, firstname, lastname);
+            return new User(id, telegramId, username, firstname, lastname, state);
         }
     }
 
@@ -75,4 +83,9 @@ public class User {
     public String getLastname() {
         return lastname;
     }
+
+    public UserState getState() {
+        return state;
+    }
+
 }
