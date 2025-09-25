@@ -4,7 +4,7 @@ import com.pechatnikov.numbermnemocardsgeneratorbot.application.mapper.GetOrCrea
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.GetOrCreateUserCommand;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.UserService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.UserRepositoryPort;
-import com.pechatnikov.numbermnemocardsgeneratorbot.domain.User;
+import com.pechatnikov.numbermnemocardsgeneratorbot.domain.user.User;
 import org.springframework.stereotype.Service;
 
 @Service

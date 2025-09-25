@@ -1,0 +1,43 @@
+databaseChangeLog:
+  - changeSet:
+      id: 006-create-order-table
+      author: dpechatnikov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_order
+                  name: id
+                  type: BIGINT
+              - column:
+                  name: user_id
+                  type: BIGINT
+              - column:
+                  name: status
+                  type: INT
+              - column:
+                  name: token_amount
+                  type: BIGINT
+              - column:
+                  name: updated_at
+                  type: timestamp with time zone
+              - column:
+                  name: created_at
+                  type: timestamp with time zone
+            tableName: order
+  - changeSet:
+      id: 006-create-order-table-fk
+      author: dpechatnikov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: user_id
+            baseTableName: order
+            constraintName: FK_ORDER_ON_USER
+            referencedColumnNames: id
+            referencedTableName: user
+

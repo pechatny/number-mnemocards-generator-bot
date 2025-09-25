@@ -1,4 +1,4 @@
-package com.pechatnikov.numbermnemocardsgeneratorbot.domain;
+package com.pechatnikov.numbermnemocardsgeneratorbot.domain.user;
 
 public class User {
     private final Long id;

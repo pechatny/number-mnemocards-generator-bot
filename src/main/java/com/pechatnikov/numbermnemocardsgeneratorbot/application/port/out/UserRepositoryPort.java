@@ -1,6 +1,6 @@
 package com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out;
 
-import com.pechatnikov.numbermnemocardsgeneratorbot.domain.User;
+import com.pechatnikov.numbermnemocardsgeneratorbot.domain.user.User;
 
 import java.util.Optional;
 
