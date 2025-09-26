@@ -12,15 +12,15 @@ public interface OrderPersistenceMapper {
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")
     @Mapping(target = "user", source = "user")
-    @Mapping(target = "status", source = "status")
     @Mapping(target = "tokenAmount", source = "tokenAmount")
-    OrderEntity toEntity(Order message);
+    @Mapping(target = "status", source = "status")
+    OrderEntity toEntity(Order domain);
 
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")
     @Mapping(target = "user", source = "user")
-    @Mapping(target = "status", source = "status")
     @Mapping(target = "tokenAmount", source = "tokenAmount")
-    Order toDomain(OrderEntity messageEntity);
+    @Mapping(target = "status", source = "status")
+    Order toDomain(OrderEntity entity);
 
 }

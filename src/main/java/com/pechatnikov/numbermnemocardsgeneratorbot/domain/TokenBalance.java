@@ -1,5 +1,7 @@
 package com.pechatnikov.numbermnemocardsgeneratorbot.domain;
 
+import com.pechatnikov.numbermnemocardsgeneratorbot.domain.user.User;
+
 public class TokenBalance {
     private final Long id;
     private final User user;
