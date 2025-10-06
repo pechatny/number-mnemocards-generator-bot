@@ -62,7 +62,8 @@ public class NumericMessageHandlerImpl implements NumericMessageHandler {
         log.info("Необходимо {} токенов", countedTokens);
 
         if (checkTokenBalance(message, user, countedTokens)) {
-            paymentService.sendInvoice(message.getChatId(), "Хотите купить дополнительные токены для мнемокарточек?",
+            // TODO надо отправить пользователю кнопку на оплату
+            paymentService.sendInvoice(message.getChatId().toString(), "Хотите купить дополнительные токены для мнемокарточек?",
                 "Токен - это цифра в числе. Курс 1 токен (цифра) = 50 копеек",
                 "{}", "381764678:TEST:128329", "RUB", 100);
             return;

@@ -20,7 +20,7 @@ public class PaymentService {
     }
 
     public void sendInvoice(
-        Long chatId,
+        String chatId,
         String title,
         String description,
         String payload,
@@ -40,7 +40,7 @@ public class PaymentService {
 
         // Создаем инвойс
         SendInvoice sendInvoice = new SendInvoice();
-        sendInvoice.setChatId(chatId.toString());
+        sendInvoice.setChatId(chatId);
         sendInvoice.setTitle(title);
         sendInvoice.setDescription(description);
         sendInvoice.setPayload(payload);

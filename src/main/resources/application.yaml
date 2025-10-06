@@ -19,3 +19,5 @@ bot:
   name: NumberMnemocardsGeneratorBot
   token: ${BOT_TOKEN}
   chat-id: ${BOT_CHAT_ID}
+payment:
+  token: ${PAYMENT_TOKEN}
