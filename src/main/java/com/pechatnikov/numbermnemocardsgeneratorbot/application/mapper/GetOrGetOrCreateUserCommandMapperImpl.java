@@ -1,7 +1,7 @@
 package com.pechatnikov.numbermnemocardsgeneratorbot.application.mapper;
 
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.GetOrCreateUserCommand;
-import com.pechatnikov.numbermnemocardsgeneratorbot.domain.User;
+import com.pechatnikov.numbermnemocardsgeneratorbot.domain.user.User;
 import org.springframework.stereotype.Component;
 
 import javax.validation.ValidationException;

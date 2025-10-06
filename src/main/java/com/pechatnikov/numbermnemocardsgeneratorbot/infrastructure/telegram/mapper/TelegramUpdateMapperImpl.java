@@ -24,7 +24,7 @@ public class TelegramUpdateMapperImpl implements TelegramUpdateMapper {
     }
 
     @Override
-    public Message toMessage(Update update, com.pechatnikov.numbermnemocardsgeneratorbot.domain.User user) {
+    public Message toMessage(Update update, com.pechatnikov.numbermnemocardsgeneratorbot.domain.user.User user) {
         Message.MessageBuilder messageBuilder = Message.builder();
         if (update.hasMessage() && update.getMessage().hasText()) {
             messageBuilder.message(update.getMessage().getText());

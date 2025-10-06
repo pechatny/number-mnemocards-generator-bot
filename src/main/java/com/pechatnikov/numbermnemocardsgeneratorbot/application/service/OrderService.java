@@ -6,6 +6,8 @@ import com.pechatnikov.numbermnemocardsgeneratorbot.domain.order.OrderStatus;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.user.User;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class OrderService {
     private final OrderRepositoryPort orderRepositoryPort;
@@ -22,5 +24,9 @@ public class OrderService {
             .build();
 
         return orderRepositoryPort.save(order);
+    }
+
+    public Optional<Order> findById(Long orderId) {
+        return orderRepositoryPort.findById(orderId);
     }
 }

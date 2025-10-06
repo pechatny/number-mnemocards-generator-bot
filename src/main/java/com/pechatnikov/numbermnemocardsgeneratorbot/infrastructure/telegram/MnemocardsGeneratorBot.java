@@ -2,6 +2,9 @@ package com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram;
 
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.NumericMessageHandler;
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.configuration.BotProperties;
+import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram.handler.InvoiceHandler;
+import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram.handler.PreCheckoutHandler;
+import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram.handler.SuccessfulPaymentHandler;
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram.mapper.TelegramUpdateMapper;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -23,15 +26,21 @@ public class MnemocardsGeneratorBot extends TelegramLongPollingBot {
     private final ExecutorService executorService;
     private final TelegramUpdateMapper telegramUpdateMapper;
     private final NumericMessageHandler numericMessageHandler;
+    private final PreCheckoutHandler preCheckoutHandler;
+    private final SuccessfulPaymentHandler successfulPaymentHandler;
+    private final InvoiceHandler invoiceHandler;
 
     public MnemocardsGeneratorBot(
         BotProperties props,
         TelegramUpdateMapper telegramUpdateMapper,
-        NumericMessageHandler numericMessageHandler
+        NumericMessageHandler numericMessageHandler, PreCheckoutHandler preCheckoutHandler, SuccessfulPaymentHandler successfulPaymentHandler, InvoiceHandler invoiceHandler
     ) {
         this.props = props;
         this.numericMessageHandler = numericMessageHandler;
         this.telegramUpdateMapper = telegramUpdateMapper;
+        this.preCheckoutHandler = preCheckoutHandler;
+        this.successfulPaymentHandler = successfulPaymentHandler;
+        this.invoiceHandler = invoiceHandler;
         this.executorService = Executors.newFixedThreadPool(10); // Пул потоков для обработки
     }
 
@@ -44,7 +53,13 @@ public class MnemocardsGeneratorBot extends TelegramLongPollingBot {
 
     private void processUpdate(Update update) {
         try {
-            if (containsDigits(update)) {
+            if (update.hasMessage() && update.getMessage().hasSuccessfulPayment()) {
+                successfulPaymentHandler.handle(update.getMessage());
+            } else if (update.hasPreCheckoutQuery()) {
+                preCheckoutHandler.handle(update.getPreCheckoutQuery());
+            } else if (containsInvoiceCommand(update)) {
+                invoiceHandler.handle(update);
+            } else if (containsDigits(update)) {
                 handleNumericMessage(update);
 //            } else if (update.hasCallbackQuery()) {
 //                handleCallbackQuery(update);
@@ -59,6 +74,16 @@ public class MnemocardsGeneratorBot extends TelegramLongPollingBot {
             log.error("Error processing update: {}", update.getUpdateId(), e);
             handleError(update, e);
         }
+    }
+
+    private boolean containsInvoiceCommand(Update update) {
+        if (update.hasMessage() && update.getMessage().hasText()) {
+            String text = update.getMessage().getText();
+
+            return "/invoice".equals(text);
+        }
+
+        return false;
     }
 
     private boolean containsDigits(Update update) {

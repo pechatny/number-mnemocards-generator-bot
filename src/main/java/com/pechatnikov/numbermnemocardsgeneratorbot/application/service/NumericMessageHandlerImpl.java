@@ -11,7 +11,7 @@ import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.SendPho
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.Message;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.TokenBalance;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.TokenTransaction;
-import com.pechatnikov.numbermnemocardsgeneratorbot.domain.User;
+import com.pechatnikov.numbermnemocardsgeneratorbot.domain.user.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -33,8 +33,9 @@ public class NumericMessageHandlerImpl implements NumericMessageHandler {
     private final TokenTransactionService tokenTransactionService;
     private final TokenBalanceService tokenBalanceService;
     private final SendMessageService sendMessageService;
+    private final PaymentService paymentService;
 
-    public NumericMessageHandlerImpl(UserService userService, MessageService messageService, NumberSplitter splitter, ImageMerger imageMerger, SendPhotoService sendPhotoService, TokenTransactionService tokenTransactionService, TokenBalanceService tokenBalanceService, SendMessageService sendMessageService) {
+    public NumericMessageHandlerImpl(UserService userService, MessageService messageService, NumberSplitter splitter, ImageMerger imageMerger, SendPhotoService sendPhotoService, TokenTransactionService tokenTransactionService, TokenBalanceService tokenBalanceService, SendMessageService sendMessageService, PaymentService paymentService) {
         this.userService = userService;
         this.messageService = messageService;
         this.splitter = splitter;
@@ -43,6 +44,7 @@ public class NumericMessageHandlerImpl implements NumericMessageHandler {
         this.tokenTransactionService = tokenTransactionService;
         this.tokenBalanceService = tokenBalanceService;
         this.sendMessageService = sendMessageService;
+        this.paymentService = paymentService;
     }
 
     @Override
@@ -60,6 +62,9 @@ public class NumericMessageHandlerImpl implements NumericMessageHandler {
         log.info("Необходимо {} токенов", countedTokens);
 
         if (checkTokenBalance(message, user, countedTokens)) {
+            paymentService.sendInvoice(message.getChatId(), "Хотите купить дополнительные токены для мнемокарточек?",
+                "Токен - это цифра в числе. Курс 1 токен (цифра) = 50 копеек",
+                "{}", "381764678:TEST:128329", "RUB", 100);
             return;
         }
 

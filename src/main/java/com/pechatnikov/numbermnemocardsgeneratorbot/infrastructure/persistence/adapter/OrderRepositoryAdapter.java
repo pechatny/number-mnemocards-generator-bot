@@ -6,22 +6,29 @@ import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.persistence.j
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.persistence.mapper.OrderPersistenceMapper;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 @Component
 public class OrderRepositoryAdapter implements OrderRepositoryPort {
     private final SpringDataOrderRepository springDataOrderRepository;
-    private final OrderPersistenceMapper messagePersistenceMapper;
+    private final OrderPersistenceMapper orderPersistenceMapper;
 
     public OrderRepositoryAdapter(SpringDataOrderRepository springDataOrderRepository, OrderPersistenceMapper messagePersistenceMapper) {
         this.springDataOrderRepository = springDataOrderRepository;
-        this.messagePersistenceMapper = messagePersistenceMapper;
+        this.orderPersistenceMapper = messagePersistenceMapper;
     }
 
     @Override
     public Order save(Order order) {
         var entity = springDataOrderRepository.save(
-            messagePersistenceMapper.toEntity(order)
+            orderPersistenceMapper.toEntity(order)
         );
 
-        return messagePersistenceMapper.toDomain(entity);
+        return orderPersistenceMapper.toDomain(entity);
+    }
+
+    @Override
+    public Optional<Order> findById(Long orderId) {
+        return springDataOrderRepository.findById(orderId).map(orderPersistenceMapper::toDomain);
     }
 }

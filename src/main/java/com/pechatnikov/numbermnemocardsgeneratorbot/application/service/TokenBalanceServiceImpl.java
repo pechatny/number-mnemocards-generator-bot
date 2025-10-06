@@ -4,7 +4,7 @@ import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.TokenBal
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.TokenBalanceRepositoryPort;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.TokenBalance;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.TokenTransaction;
-import com.pechatnikov.numbermnemocardsgeneratorbot.domain.User;
+import com.pechatnikov.numbermnemocardsgeneratorbot.domain.user.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
