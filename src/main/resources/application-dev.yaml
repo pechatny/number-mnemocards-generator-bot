@@ -1,3 +1,8 @@
+logging:
+  level:
+    root: error
+    com.pechatnikov.numbermnemocardsgeneratorbot: debug
+
 #spring:
 #  datasource:
 #    driver-class-name: org.postgresql.Driver
