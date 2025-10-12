@@ -2,6 +2,7 @@ package com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram;
 
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.NumericMessageHandler;
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.configuration.BotProperties;
+import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram.handler.CallbackHandler;
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram.handler.InvoiceHandler;
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram.handler.PreCheckoutHandler;
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram.handler.SuccessfulPaymentHandler;
@@ -29,11 +30,12 @@ public class MnemocardsGeneratorBot extends TelegramLongPollingBot {
     private final PreCheckoutHandler preCheckoutHandler;
     private final SuccessfulPaymentHandler successfulPaymentHandler;
     private final InvoiceHandler invoiceHandler;
+    private final CallbackHandler callbackHandler;
 
     public MnemocardsGeneratorBot(
         BotProperties props,
         TelegramUpdateMapper telegramUpdateMapper,
-        NumericMessageHandler numericMessageHandler, PreCheckoutHandler preCheckoutHandler, SuccessfulPaymentHandler successfulPaymentHandler, InvoiceHandler invoiceHandler
+        NumericMessageHandler numericMessageHandler, PreCheckoutHandler preCheckoutHandler, SuccessfulPaymentHandler successfulPaymentHandler, InvoiceHandler invoiceHandler, CallbackHandler callbackHandler
     ) {
         this.props = props;
         this.numericMessageHandler = numericMessageHandler;
@@ -41,6 +43,7 @@ public class MnemocardsGeneratorBot extends TelegramLongPollingBot {
         this.preCheckoutHandler = preCheckoutHandler;
         this.successfulPaymentHandler = successfulPaymentHandler;
         this.invoiceHandler = invoiceHandler;
+        this.callbackHandler = callbackHandler;
         this.executorService = Executors.newFixedThreadPool(10); // Пул потоков для обработки
     }
 
@@ -59,6 +62,8 @@ public class MnemocardsGeneratorBot extends TelegramLongPollingBot {
                 preCheckoutHandler.handle(update.getPreCheckoutQuery());
             } else if (containsInvoiceCommand(update)) {
                 invoiceHandler.handle(update);
+            } else if (update.hasCallbackQuery()) {
+                callbackHandler.handle(update);
             } else if (containsDigits(update)) {
                 handleNumericMessage(update);
 //            } else if (update.hasCallbackQuery()) {
