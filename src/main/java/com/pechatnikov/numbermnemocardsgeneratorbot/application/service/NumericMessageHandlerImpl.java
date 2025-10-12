@@ -7,7 +7,9 @@ import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.TokenBal
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.TokenTransactionService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.UserService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.SendMessageService;
+import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.SendPayButtonService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.SendPhotoService;
+import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.SendPricesButtonsService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.Message;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.TokenBalance;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.TokenTransaction;
@@ -34,8 +36,21 @@ public class NumericMessageHandlerImpl implements NumericMessageHandler {
     private final TokenBalanceService tokenBalanceService;
     private final SendMessageService sendMessageService;
     private final PaymentService paymentService;
+    private final SendPayButtonService sendPayButtonService;
+//    private final SendPricesButtonsService sendPricesButtonsService;
 
-    public NumericMessageHandlerImpl(UserService userService, MessageService messageService, NumberSplitter splitter, ImageMerger imageMerger, SendPhotoService sendPhotoService, TokenTransactionService tokenTransactionService, TokenBalanceService tokenBalanceService, SendMessageService sendMessageService, PaymentService paymentService) {
+    public NumericMessageHandlerImpl(
+        UserService userService,
+        MessageService messageService,
+        NumberSplitter splitter,
+        ImageMerger imageMerger,
+        SendPhotoService sendPhotoService,
+        TokenTransactionService tokenTransactionService,
+        TokenBalanceService tokenBalanceService,
+        SendMessageService sendMessageService,
+        PaymentService paymentService,
+        SendPayButtonService sendPayButtonService
+    ) {
         this.userService = userService;
         this.messageService = messageService;
         this.splitter = splitter;
@@ -45,6 +60,7 @@ public class NumericMessageHandlerImpl implements NumericMessageHandler {
         this.tokenBalanceService = tokenBalanceService;
         this.sendMessageService = sendMessageService;
         this.paymentService = paymentService;
+        this.sendPayButtonService = sendPayButtonService;
     }
 
     @Override
@@ -62,10 +78,12 @@ public class NumericMessageHandlerImpl implements NumericMessageHandler {
         log.info("Необходимо {} токенов", countedTokens);
 
         if (checkTokenBalance(message, user, countedTokens)) {
-            // TODO надо отправить пользователю кнопку на оплату
-            paymentService.sendInvoice(message.getChatId().toString(), "Хотите купить дополнительные токены для мнемокарточек?",
-                "Токен - это цифра в числе. Курс 1 токен (цифра) = 50 копеек",
-                "{}", "381764678:TEST:128329", "RUB", 100);
+//            sendPayButtonService.sendPayButton(message.getChatId());
+            paymentService.showPricesButton(message.getChatId());
+            // Перенести создание инвойса на обработку команды pay
+//            paymentService.sendInvoice(message.getChatId().toString(), "Хотите купить дополнительные токены для мнемокарточек?",
+//                "Токен - это цифра в числе. Курс 1 токен (цифра) = 50 копеек",
+//                "{}", "381764678:TEST:128329", "RUB", 100);
             return;
         }
 

@@ -7,6 +7,8 @@ import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.UserRep
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.user.User;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepositoryPort userRepositoryPort;
@@ -27,4 +29,10 @@ public class UserServiceImpl implements UserService {
             create(getOrCreateUserCommand)
         );
     }
+
+    @Override
+    public Optional<User> findByTelegramId(Long telegramId) {
+        return userRepositoryPort.findByTelegramId(telegramId);
+    }
+
 }
