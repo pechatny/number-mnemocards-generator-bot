@@ -68,7 +68,7 @@ public class CreateInvoiceCallbackProcessor implements CallbackProcessor {
             user,
             callback.getChatId().toString(),
             "Покупка цифр для преобразования в мнемокарточки в количестве: " + callback.getValue() + " шт",
-            "",
+            "Покупка цифр для преобразования в мнемокарточки",
             price
 
         );
