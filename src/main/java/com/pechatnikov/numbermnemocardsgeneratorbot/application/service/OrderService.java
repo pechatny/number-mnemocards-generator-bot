@@ -4,10 +4,12 @@ import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.OrderRe
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.order.Order;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.order.OrderStatus;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.user.User;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+@Slf4j
 @Service
 public class OrderService {
     private final OrderRepositoryPort orderRepositoryPort;
@@ -24,6 +26,30 @@ public class OrderService {
             .build();
 
         return orderRepositoryPort.save(order);
+    }
+
+    public Order updateStatus(Order order, OrderStatus nextStatus) throws Exception {
+        checkStatus(order, nextStatus);
+        Order updatedOrder = order.toBuilder()
+            .status(nextStatus)
+            .build();
+
+        return orderRepositoryPort.save(updatedOrder);
+    }
+
+    private void checkStatus(Order order, OrderStatus nextStatus) throws Exception {
+        if (order.getStatus().equals(nextStatus)) {
+            log.debug("Order status {} already set", nextStatus);
+            return;
+        }
+
+        if (order.getStatus().getNext() != nextStatus) {
+            throw new Exception("Order Status not supported");
+        }
+
+        if (order.getStatus().getNext() == null) {
+            throw new Exception("Order Status already final, can't change status");
+        }
     }
 
     public Optional<Order> findById(Long orderId) {
