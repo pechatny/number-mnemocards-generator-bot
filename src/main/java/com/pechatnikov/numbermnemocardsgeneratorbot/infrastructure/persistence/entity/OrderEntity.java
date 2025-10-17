@@ -10,6 +10,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -34,7 +35,7 @@ public class OrderEntity {
     @JoinColumn
     private UserEntity user;
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private OrderStatus status;
 
@@ -45,5 +46,6 @@ public class OrderEntity {
     private Instant updatedAt;
 
     @CreatedDate
+    @Column(name = "created_at", updatable = false)
     private Instant createdAt;
 }

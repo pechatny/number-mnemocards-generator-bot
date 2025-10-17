@@ -3,6 +3,8 @@ package com.pechatnikov.numbermnemocardsgeneratorbot.application.service;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.PreCheckoutService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.SendPreCheckoutService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.PreCheckout;
+import com.pechatnikov.numbermnemocardsgeneratorbot.domain.order.Order;
+import com.pechatnikov.numbermnemocardsgeneratorbot.domain.order.OrderStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -22,8 +24,19 @@ public class PreCheckoutServiceImpl implements PreCheckoutService {
         log.info("Пришел PreCheckout {}", preCheckout);
 
         orderService.findById(preCheckout.getOrderId()).ifPresentOrElse(
-            order -> preCheckoutService.send(preCheckout.getId(), true),
+            order -> {
+                preCheckoutService.send(preCheckout.getId(), true);
+                updateOrderStatus(order);
+            },
             () -> preCheckoutService.send(preCheckout.getId(), false)
         );
+    }
+
+    private void updateOrderStatus(Order order) {
+        try {
+            orderService.updateStatus(order, OrderStatus.IN_PROGRESS);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
