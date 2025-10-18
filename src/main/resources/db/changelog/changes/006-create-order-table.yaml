@@ -19,7 +19,9 @@ databaseChangeLog:
                   type: BIGINT
               - column:
                   name: status
-                  type: INT
+                  type: VARCHAR
+                  constraints:
+                    nullable: false
               - column:
                   name: token_amount
                   type: BIGINT
