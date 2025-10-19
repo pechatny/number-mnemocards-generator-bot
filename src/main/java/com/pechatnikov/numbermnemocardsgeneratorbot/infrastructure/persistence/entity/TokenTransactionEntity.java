@@ -35,8 +35,8 @@ public class TokenTransactionEntity {
     private UserEntity user;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "message_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "message_id")
     private MessageEntity message;
 
     @NotNull

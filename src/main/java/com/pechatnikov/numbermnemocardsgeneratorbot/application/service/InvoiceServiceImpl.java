@@ -6,6 +6,8 @@ import com.pechatnikov.numbermnemocardsgeneratorbot.domain.order.Order;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.user.User;
 import org.springframework.stereotype.Service;
 
+import java.util.Currency;
+
 @Service
 public class InvoiceServiceImpl implements InvoiceService{
     private final static Long TOKEN_RATE = 2L;
@@ -18,7 +20,7 @@ public class InvoiceServiceImpl implements InvoiceService{
     @Override
     public Invoice create(User user, String chatId, String title, String description, Money price) {
         Long tokenAmount = price.getAmount().longValue() * TOKEN_RATE;
-        Order order = orderService.create(user, tokenAmount);
+        Order order = orderService.create(user, tokenAmount, price);
 
         return Invoice.builder()
             .chatId(chatId)

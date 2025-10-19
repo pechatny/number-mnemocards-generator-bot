@@ -7,7 +7,10 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.EnumType;
@@ -41,6 +44,13 @@ public class OrderEntity {
 
     @Column(name = "token_amount")
     private Long tokenAmount;
+
+    @Embedded
+    @AttributeOverrides({
+        @AttributeOverride(name = "amount", column = @Column(name = "payment_amount")),
+        @AttributeOverride(name = "currencyCode", column = @Column(name = "payment_currency_code"))
+    })
+    private MoneyValue paymentAmount;
 
     @LastModifiedDate
     private Instant updatedAt;

@@ -26,6 +26,12 @@ databaseChangeLog:
                   name: token_amount
                   type: BIGINT
               - column:
+                  name: payment_amount
+                  type: BIGINT
+              - column:
+                  name: payment_currency_code
+                  type: VARCHAR
+              - column:
                   name: updated_at
                   type: timestamp with time zone
               - column:

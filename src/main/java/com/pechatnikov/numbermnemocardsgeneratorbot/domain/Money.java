@@ -47,6 +47,7 @@ public class Money {
 
     /**
      * Создает Money из минимальных единиц валюты (копейки, центы и т.д.)
+     *
      * @param minorUnits количество минимальных единиц
      * @param currency валюта
      * @return объект Money
@@ -60,6 +61,7 @@ public class Money {
 
     /**
      * Создает Money из минимальных единиц валюты (копейки, центы и т.д.)
+     *
      * @param minorUnits количество минимальных единиц как BigDecimal
      * @param currency валюта
      * @return объект Money
@@ -71,8 +73,13 @@ public class Money {
         return new Money(amount, currency);
     }
 
+    public static MoneyBuilder builder() {
+        return new MoneyBuilder();
+    }
+
     /**
      * Возвращает количество минимальных единиц валюты
+     *
      * @return количество копеек, центов и т.д.
      */
     public long toMinorUnits() {
@@ -81,6 +88,7 @@ public class Money {
 
     /**
      * Возвращает количество минимальных единиц валюты как BigDecimal
+     *
      * @return количество минимальных единиц
      */
     public BigDecimal toMinorUnitsBigDecimal() {
@@ -91,6 +99,7 @@ public class Money {
 
     /**
      * Возвращает дробную часть в минимальных единицах
+     *
      * @return дробная часть в копейках, центах и т.д.
      */
     public long getFractionalPartInMinorUnits() {
@@ -101,6 +110,7 @@ public class Money {
 
     /**
      * Возвращает целую часть суммы
+     *
      * @return целая часть (рубли, доллары и т.д.)
      */
     public BigDecimal getIntegerPart() {
@@ -109,6 +119,7 @@ public class Money {
 
     /**
      * Возвращает дробную часть как BigDecimal
+     *
      * @return дробная часть (0.99 для 1.99)
      */
     public BigDecimal getFractionalPart() {
@@ -271,5 +282,37 @@ public class Money {
     @Override
     public String toString() {
         return String.format("%s %s", amount, currency.getCurrencyCode());
+    }
+
+    public static class MoneyBuilder {
+        private BigDecimal amount;
+        private Currency currency;
+        private int scale;
+
+        MoneyBuilder() {
+        }
+
+        public MoneyBuilder amount(BigDecimal amount) {
+            this.amount = amount;
+            return this;
+        }
+
+        public MoneyBuilder currency(Currency currency) {
+            this.currency = currency;
+            return this;
+        }
+
+        public MoneyBuilder scale(int scale) {
+            this.scale = scale;
+            return this;
+        }
+
+        public Money build() {
+            return new Money(this.amount, this.currency, this.scale);
+        }
+
+        public String toString() {
+            return "Money.MoneyBuilder(amount=" + this.amount + ", currency=" + this.currency + ", scale=" + this.scale + ")";
+        }
     }
 }

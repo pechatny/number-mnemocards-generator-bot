@@ -21,8 +21,6 @@ databaseChangeLog:
               - column:
                   name: message_id
                   type: bigint
-                  constraints:
-                    nullable: false
               - column:
                   name: count
                   type: bigint

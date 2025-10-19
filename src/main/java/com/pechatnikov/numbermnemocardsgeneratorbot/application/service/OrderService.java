@@ -1,6 +1,7 @@
 package com.pechatnikov.numbermnemocardsgeneratorbot.application.service;
 
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.OrderRepositoryPort;
+import com.pechatnikov.numbermnemocardsgeneratorbot.domain.Money;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.order.Order;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.order.OrderStatus;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.user.User;
@@ -18,10 +19,11 @@ public class OrderService {
         this.orderRepositoryPort = orderRepositoryPort;
     }
 
-    public Order create(User user, Long tokenAmount) {
+    public Order create(User user, Long tokenAmount, Money price) {
         Order order = Order.builder()
             .status(OrderStatus.NEW)
             .tokenAmount(tokenAmount)
+            .paymentAmount(price)
             .user(user)
             .build();
 

@@ -5,18 +5,20 @@ import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.persistence.e
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring", uses = UserPersistenceMapper.class)
+@Mapper(componentModel = "spring", uses = {UserPersistenceMapper.class, MoneyPersistenceMapper.class})
 public interface OrderPersistenceMapper {
 
     @Mapping(target = "id", source = "id")
     @Mapping(target = "user", source = "user")
     @Mapping(target = "tokenAmount", source = "tokenAmount")
+    @Mapping(target = "paymentAmount", source = "paymentAmount")
     @Mapping(target = "status", source = "status")
     OrderEntity toEntity(Order domain);
 
     @Mapping(target = "id", source = "id")
     @Mapping(target = "user", source = "user")
     @Mapping(target = "tokenAmount", source = "tokenAmount")
+    @Mapping(target = "paymentAmount", source = "paymentAmount")
     @Mapping(target = "status", source = "status")
     Order toDomain(OrderEntity entity);
 

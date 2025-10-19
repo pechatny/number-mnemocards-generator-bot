@@ -1,5 +1,6 @@
 package com.pechatnikov.numbermnemocardsgeneratorbot.domain.order;
 
+import com.pechatnikov.numbermnemocardsgeneratorbot.domain.Money;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.user.User;
 
 public class Order {
@@ -7,12 +8,14 @@ public class Order {
     private final User user;
     private final OrderStatus status;
     private final Long tokenAmount;
+    private final Money paymentAmount;
 
-    Order(Long id, User user, OrderStatus status, Long tokenAmount) {
+    Order(Long id, User user, OrderStatus status, Long tokenAmount, Money paymentAmount) {
         this.id = id;
         this.user = user;
         this.status = status;
         this.tokenAmount = tokenAmount;
+        this.paymentAmount = paymentAmount;
     }
 
     public static OrderBuilder builder() {
@@ -35,6 +38,10 @@ public class Order {
         return this.tokenAmount;
     }
 
+    public Money getPaymentAmount() {
+        return this.paymentAmount;
+    }
+
     public OrderBuilder toBuilder() {
         return new OrderBuilder().id(this.id).user(this.user).status(this.status).tokenAmount(this.tokenAmount);
     }
@@ -44,6 +51,7 @@ public class Order {
         private User user;
         private OrderStatus status;
         private Long tokenAmount;
+        private Money paymentAmount;
 
         OrderBuilder() {
         }
@@ -68,12 +76,17 @@ public class Order {
             return this;
         }
 
+        public OrderBuilder paymentAmount(Money paymentAmount) {
+            this.paymentAmount = paymentAmount;
+            return this;
+        }
+
         public Order build() {
-            return new Order(this.id, this.user, this.status, this.tokenAmount);
+            return new Order(this.id, this.user, this.status, this.tokenAmount, this.paymentAmount);
         }
 
         public String toString() {
-            return "Order.OrderBuilder(id=" + this.id + ", user=" + this.user + ", status=" + this.status + ", tokenAmount=" + this.tokenAmount + ")";
+            return "Order.OrderBuilder(id=" + this.id + ", user=" + this.user + ", status=" + this.status + ", tokenAmount=" + this.tokenAmount + ", paymentAmount=" + this.paymentAmount + ")";
         }
     }
 }

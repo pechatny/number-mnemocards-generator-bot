@@ -25,11 +25,19 @@ public class PreCheckoutServiceImpl implements PreCheckoutService {
 
         orderService.findById(preCheckout.getOrderId()).ifPresentOrElse(
             order -> {
+                validatePaymentAmount(order, preCheckout);
+
                 preCheckoutService.send(preCheckout.getId(), true);
                 updateOrderStatus(order);
             },
             () -> preCheckoutService.send(preCheckout.getId(), false)
         );
+    }
+
+    // TODO сделать валидацию суммы
+    private void validatePaymentAmount(Order order, PreCheckout preCheckout) {
+//        if (order.getPaymentAmount().equals(preCheckout))
+
     }
 
     private void updateOrderStatus(Order order) {
