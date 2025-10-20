@@ -8,6 +8,8 @@ import com.pechatnikov.numbermnemocardsgeneratorbot.domain.order.OrderStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Slf4j
 @Service
 public class PreCheckoutServiceImpl implements PreCheckoutService {
@@ -25,24 +27,29 @@ public class PreCheckoutServiceImpl implements PreCheckoutService {
 
         orderService.findById(preCheckout.getOrderId()).ifPresentOrElse(
             order -> {
-                validatePaymentAmount(order, preCheckout);
+                if (isValidOrder(order, preCheckout)) {
+                    preCheckoutService.send(preCheckout.getId(), true);
+                    updateOrderStatus(order, OrderStatus.IN_PROGRESS);
+                } else {
+                    preCheckoutService.send(preCheckout.getId(), false);
+                }
 
-                preCheckoutService.send(preCheckout.getId(), true);
-                updateOrderStatus(order);
             },
             () -> preCheckoutService.send(preCheckout.getId(), false)
         );
     }
 
-    // TODO сделать валидацию суммы
-    private void validatePaymentAmount(Order order, PreCheckout preCheckout) {
-//        if (order.getPaymentAmount().equals(preCheckout))
+    private boolean isValidOrder(Order order, PreCheckout preCheckout) {
+        List<OrderStatus> validStatuses = List.of(OrderStatus.NEW, OrderStatus.IN_PROGRESS);
+        log.debug("Order validation started; order: {}; preCheckout: {}", order, preCheckout);
 
+        return order.getPaymentAmount().equals(preCheckout.getPaymentAmount())
+            && validStatuses.contains(order.getStatus());
     }
 
-    private void updateOrderStatus(Order order) {
+    private void updateOrderStatus(Order order, OrderStatus orderStatus) {
         try {
-            orderService.updateStatus(order, OrderStatus.IN_PROGRESS);
+            orderService.updateStatus(order, orderStatus);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

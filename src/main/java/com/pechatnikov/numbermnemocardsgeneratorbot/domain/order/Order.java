@@ -43,7 +43,12 @@ public class Order {
     }
 
     public OrderBuilder toBuilder() {
-        return new OrderBuilder().id(this.id).user(this.user).status(this.status).tokenAmount(this.tokenAmount);
+        return new OrderBuilder()
+            .id(this.id)
+            .user(this.user)
+            .status(this.status)
+            .tokenAmount(this.tokenAmount)
+            .paymentAmount(this.paymentAmount);
     }
 
     public static class OrderBuilder {
