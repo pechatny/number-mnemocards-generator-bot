@@ -32,6 +32,12 @@ databaseChangeLog:
                   name: payment_currency_code
                   type: VARCHAR
               - column:
+                  name: invoice_chat_id
+                  type: BIGINT
+              - column:
+                  name: invoice_message_id
+                  type: INT
+              - column:
                   name: updated_at
                   type: timestamp with time zone
               - column:

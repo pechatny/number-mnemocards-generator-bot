@@ -1,6 +1,8 @@
 package com.pechatnikov.numbermnemocardsgeneratorbot.application.service;
 
+import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.SaveInvoiceMessageService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.OrderRepositoryPort;
+import com.pechatnikov.numbermnemocardsgeneratorbot.domain.InvoiceMessage;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.Money;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.order.Order;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.order.OrderStatus;
@@ -12,7 +14,7 @@ import java.util.Optional;
 
 @Slf4j
 @Service
-public class OrderService {
+public class OrderService implements SaveInvoiceMessageService {
     private final OrderRepositoryPort orderRepositoryPort;
 
     public OrderService(OrderRepositoryPort orderRepositoryPort) {
@@ -56,5 +58,15 @@ public class OrderService {
 
     public Optional<Order> findById(Long orderId) {
         return orderRepositoryPort.findById(orderId);
+    }
+
+    @Override
+    public void saveInvoiceMessage(Long orderId, InvoiceMessage message) {
+        Order order = orderRepositoryPort.findById(orderId).orElseThrow();
+        Order updatedOrder = order.toBuilder()
+            .invoiceMessage(message)
+            .build();
+
+        orderRepositoryPort.save(updatedOrder);
     }
 }

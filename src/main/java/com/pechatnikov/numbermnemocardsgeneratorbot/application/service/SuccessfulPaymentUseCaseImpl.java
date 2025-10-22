@@ -3,6 +3,7 @@ package com.pechatnikov.numbermnemocardsgeneratorbot.application.service;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.SuccessfulPaymentUseCase;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.TokenBalanceService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.TokenTransactionService;
+import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.DeleteMessageService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.SuccessfulPayment;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.TokenTransaction;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.order.Order;
@@ -17,11 +18,13 @@ public class SuccessfulPaymentUseCaseImpl implements SuccessfulPaymentUseCase {
     private final OrderService orderService;
     private final TokenBalanceService tokenBalanceService;
     private final TokenTransactionService tokenTransactionService;
+    private final DeleteMessageService deleteMessageService;
 
-    public SuccessfulPaymentUseCaseImpl(OrderService orderService, TokenBalanceService tokenBalanceService, TokenTransactionService tokenTransactionService) {
+    public SuccessfulPaymentUseCaseImpl(OrderService orderService, TokenBalanceService tokenBalanceService, TokenTransactionService tokenTransactionService, DeleteMessageService deleteMessageService) {
         this.orderService = orderService;
         this.tokenBalanceService = tokenBalanceService;
         this.tokenTransactionService = tokenTransactionService;
+        this.deleteMessageService = deleteMessageService;
     }
 
     @Override
@@ -41,6 +44,9 @@ public class SuccessfulPaymentUseCaseImpl implements SuccessfulPaymentUseCase {
 
         try {
             orderService.updateStatus(order, OrderStatus.COMPLETED);
+
+            log.debug("Удаляю сообщение с кнопкой на оплату");
+            deleteMessageService.delete(order.getInvoiceMessage().getChatId(), order.getInvoiceMessage().getMessageId());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

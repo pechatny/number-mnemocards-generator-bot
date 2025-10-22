@@ -1,5 +1,6 @@
 package com.pechatnikov.numbermnemocardsgeneratorbot.domain.order;
 
+import com.pechatnikov.numbermnemocardsgeneratorbot.domain.InvoiceMessage;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.Money;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.user.User;
 
@@ -9,13 +10,15 @@ public class Order {
     private final OrderStatus status;
     private final Long tokenAmount;
     private final Money paymentAmount;
+    private final InvoiceMessage invoiceMessage;
 
-    Order(Long id, User user, OrderStatus status, Long tokenAmount, Money paymentAmount) {
+    Order(Long id, User user, OrderStatus status, Long tokenAmount, Money paymentAmount, InvoiceMessage invoiceMessage) {
         this.id = id;
         this.user = user;
         this.status = status;
         this.tokenAmount = tokenAmount;
         this.paymentAmount = paymentAmount;
+        this.invoiceMessage = invoiceMessage;
     }
 
     public static OrderBuilder builder() {
@@ -42,13 +45,18 @@ public class Order {
         return this.paymentAmount;
     }
 
+    public InvoiceMessage getInvoiceMessage() {
+        return this.invoiceMessage;
+    }
+
     public OrderBuilder toBuilder() {
         return new OrderBuilder()
             .id(this.id)
             .user(this.user)
             .status(this.status)
             .tokenAmount(this.tokenAmount)
-            .paymentAmount(this.paymentAmount);
+            .paymentAmount(this.paymentAmount)
+            .invoiceMessage(this.invoiceMessage);
     }
 
     public static class OrderBuilder {
@@ -57,6 +65,7 @@ public class Order {
         private OrderStatus status;
         private Long tokenAmount;
         private Money paymentAmount;
+        private InvoiceMessage invoiceMessage;
 
         OrderBuilder() {
         }
@@ -86,8 +95,13 @@ public class Order {
             return this;
         }
 
+        public OrderBuilder invoiceMessage(InvoiceMessage invoiceMessage) {
+            this.invoiceMessage = invoiceMessage;
+            return this;
+        }
+
         public Order build() {
-            return new Order(this.id, this.user, this.status, this.tokenAmount, this.paymentAmount);
+            return new Order(this.id, this.user, this.status, this.tokenAmount, this.paymentAmount, this.invoiceMessage);
         }
 
         public String toString() {

@@ -52,6 +52,13 @@ public class OrderEntity {
     })
     private MoneyValue paymentAmount;
 
+    @Embedded
+    @AttributeOverrides({
+        @AttributeOverride(name = "chatId", column = @Column(name = "invoice_chat_id")),
+        @AttributeOverride(name = "messageId", column = @Column(name = "invoice_message_id"))
+    })
+    private InvoiceMessageValue invoiceMessage;
+
     @LastModifiedDate
     private Instant updatedAt;
 

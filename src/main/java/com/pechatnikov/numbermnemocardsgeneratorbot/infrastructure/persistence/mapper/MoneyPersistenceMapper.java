@@ -5,7 +5,7 @@ import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.persistence.e
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring", uses = UserPersistenceMapper.class)
+@Mapper(componentModel = "spring")
 public interface MoneyPersistenceMapper {
 
     @Mapping(target = "amount", source = "amount")

@@ -2,6 +2,7 @@ package com.pechatnikov.numbermnemocardsgeneratorbot.application.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.SaveInvoiceMessageService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.service.callback.CallbackType;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.Invoice;
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.configuration.PaymentProperties;
@@ -11,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendInvoice;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.payments.LabeledPrice;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
@@ -34,10 +36,10 @@ public class PaymentService {
         this.objectMapper = objectMapper;
     }
 
-    public void sendInvoice(Invoice invoice) {
+    public Message sendInvoice(Invoice invoice) {
         try {
             String payload = objectMapper.writeValueAsString(invoice.getPayload());
-            sendInvoice(
+            return sendInvoice(
                 invoice.getChatId(),
                 invoice.getTitle(),
                 invoice.getDescription(),
@@ -52,7 +54,7 @@ public class PaymentService {
 
     }
 
-    public void sendInvoice(
+    public Message sendInvoice(
         String chatId,
         String title,
         String description,
@@ -61,7 +63,6 @@ public class PaymentService {
         String currency,
         Integer priceAmount
     ) {
-
         // Создаем цену (может быть несколько цен для разных товаров)
         List<LabeledPrice> prices = IntStream.of(priceAmount).mapToObj(amount -> {
                 String priceTitle = amount * 2 + " цифр";
@@ -85,10 +86,12 @@ public class PaymentService {
         // Дополнительные кнопки можно добавить через ReplyMarkup
 
         try {
-            telegramApiClient.execute(sendInvoice);
+            return telegramApiClient.execute(sendInvoice);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
+
+        return null;
     }
 
     public void showPricesButton(Long chatId) {
