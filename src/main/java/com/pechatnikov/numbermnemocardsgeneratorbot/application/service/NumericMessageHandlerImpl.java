@@ -7,9 +7,7 @@ import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.TokenBal
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.TokenTransactionService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.UserService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.SendMessageService;
-import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.SendPayButtonService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.SendPhotoService;
-import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.SendPricesButtonsService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.Message;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.TokenBalance;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.TokenTransaction;
@@ -36,8 +34,6 @@ public class NumericMessageHandlerImpl implements NumericMessageHandler {
     private final TokenBalanceService tokenBalanceService;
     private final SendMessageService sendMessageService;
     private final PaymentService paymentService;
-    private final SendPayButtonService sendPayButtonService;
-//    private final SendPricesButtonsService sendPricesButtonsService;
 
     public NumericMessageHandlerImpl(
         UserService userService,
@@ -48,8 +44,7 @@ public class NumericMessageHandlerImpl implements NumericMessageHandler {
         TokenTransactionService tokenTransactionService,
         TokenBalanceService tokenBalanceService,
         SendMessageService sendMessageService,
-        PaymentService paymentService,
-        SendPayButtonService sendPayButtonService
+        PaymentService paymentService
     ) {
         this.userService = userService;
         this.messageService = messageService;
@@ -60,7 +55,6 @@ public class NumericMessageHandlerImpl implements NumericMessageHandler {
         this.tokenBalanceService = tokenBalanceService;
         this.sendMessageService = sendMessageService;
         this.paymentService = paymentService;
-        this.sendPayButtonService = sendPayButtonService;
     }
 
     @Override

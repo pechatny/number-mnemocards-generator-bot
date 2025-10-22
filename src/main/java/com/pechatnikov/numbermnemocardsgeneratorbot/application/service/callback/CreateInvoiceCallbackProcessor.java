@@ -63,18 +63,14 @@ public class CreateInvoiceCallbackProcessor implements CallbackProcessor {
 
         User user = userService.findByTelegramId(callback.getTelegramId()).orElseThrow();
 
-        Money price = new Money(BigDecimal.valueOf(
-            Long.valueOf(callback.getValue())),
-            Currency.getInstance("RUB")
-        );
+        Money price = Money.of(callback.getValue(), Currency.getInstance("RUB"));
 
-        // TODO отдебажить и исправить количество цифр 10
-        // Покупка цифр для преобразования в мнемокарточки в количестве: 10
+        int tokenCount = convertMoneyToTokenCount(price);
         Invoice invoice = invoiceService.create(
             user,
             callback.getChatId().toString(),
-            "Покупка цифр для преобразования в мнемокарточки в количестве: " + callback.getValue() + " шт",
-            "Покупка цифр для преобразования в мнемокарточки",
+            "Пополнение баланса",
+            "Пополнение баланса цифрами для преобразования в мнемокарточки в количестве: " + tokenCount + " шт.",
             price
         );
 
@@ -90,5 +86,11 @@ public class CreateInvoiceCallbackProcessor implements CallbackProcessor {
             .build();
 
         saveInvoiceMessageService.saveInvoiceMessage(invoice.getPayload().getOrderId(), invoiceMessage);
+    }
+
+    private int convertMoneyToTokenCount(Money money) {
+        final int TOKEN_RATE = 2;
+
+        return money.getIntegerPart().intValue() * TOKEN_RATE;
     }
 }

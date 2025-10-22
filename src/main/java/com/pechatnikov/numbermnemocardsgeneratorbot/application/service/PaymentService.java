@@ -2,7 +2,6 @@ package com.pechatnikov.numbermnemocardsgeneratorbot.application.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.SaveInvoiceMessageService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.service.callback.CallbackType;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.Invoice;
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.configuration.PaymentProperties;
@@ -20,8 +19,6 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Slf4j
 @Service
@@ -46,7 +43,7 @@ public class PaymentService {
                 payload,
                 paymentProperties.getToken(),
                 invoice.getPrice().getCurrency().getCurrencyCode(),
-                invoice.getPrice().getAmount().intValue()
+                (int) invoice.getPrice().toMinorUnits()
             );
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
@@ -63,14 +60,9 @@ public class PaymentService {
         String currency,
         Integer priceAmount
     ) {
-        // Создаем цену (может быть несколько цен для разных товаров)
-        List<LabeledPrice> prices = IntStream.of(priceAmount).mapToObj(amount -> {
-                String priceTitle = amount * 2 + " цифр";
-                // в копейках/центах
-                return new LabeledPrice(priceTitle, amount * 100);
-            })
-            .collect(Collectors.toList());
-
+        List<LabeledPrice> prices = List.of(
+            new LabeledPrice(title, priceAmount)
+        );
 
         // Создаем инвойс
         SendInvoice sendInvoice = new SendInvoice();
