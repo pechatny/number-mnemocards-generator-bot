@@ -4,7 +4,9 @@ import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.Successf
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.TokenBalanceService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.TokenTransactionService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.DeleteMessageService;
+import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.SendMessageService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.SuccessfulPayment;
+import com.pechatnikov.numbermnemocardsgeneratorbot.domain.TokenBalance;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.TokenTransaction;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.order.Order;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.order.OrderStatus;
@@ -19,12 +21,14 @@ public class SuccessfulPaymentUseCaseImpl implements SuccessfulPaymentUseCase {
     private final TokenBalanceService tokenBalanceService;
     private final TokenTransactionService tokenTransactionService;
     private final DeleteMessageService deleteMessageService;
+    private final SendMessageService sendMessageService;
 
-    public SuccessfulPaymentUseCaseImpl(OrderService orderService, TokenBalanceService tokenBalanceService, TokenTransactionService tokenTransactionService, DeleteMessageService deleteMessageService) {
+    public SuccessfulPaymentUseCaseImpl(OrderService orderService, TokenBalanceService tokenBalanceService, TokenTransactionService tokenTransactionService, DeleteMessageService deleteMessageService, SendMessageService sendMessageService) {
         this.orderService = orderService;
         this.tokenBalanceService = tokenBalanceService;
         this.tokenTransactionService = tokenTransactionService;
         this.deleteMessageService = deleteMessageService;
+        this.sendMessageService = sendMessageService;
     }
 
     @Override
@@ -50,5 +54,9 @@ public class SuccessfulPaymentUseCaseImpl implements SuccessfulPaymentUseCase {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+
+        TokenBalance balance = tokenBalanceService.findOrCreateTokenBalanceForUser(order.getUser());
+        String balanceMessage = "Ваш баланс цифр: " + balance.getBalance() + " шт.";
+        sendMessageService.sendMessage(order.getInvoiceMessage().getChatId(), balanceMessage);
     }
 }
