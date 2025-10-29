@@ -1,6 +1,8 @@
 package com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram;
 
+import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.CommandHandler;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.NumericMessageHandler;
+import com.pechatnikov.numbermnemocardsgeneratorbot.domain.command.Command;
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.configuration.BotProperties;
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram.handler.CallbackHandler;
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram.handler.InvoiceHandler;
@@ -31,11 +33,13 @@ public class MnemocardsGeneratorBot extends TelegramLongPollingBot {
     private final SuccessfulPaymentHandler successfulPaymentHandler;
     private final InvoiceHandler invoiceHandler;
     private final CallbackHandler callbackHandler;
+    private final CommandHandler commandHandler;
+
 
     public MnemocardsGeneratorBot(
         BotProperties props,
         TelegramUpdateMapper telegramUpdateMapper,
-        NumericMessageHandler numericMessageHandler, PreCheckoutHandler preCheckoutHandler, SuccessfulPaymentHandler successfulPaymentHandler, InvoiceHandler invoiceHandler, CallbackHandler callbackHandler
+        NumericMessageHandler numericMessageHandler, PreCheckoutHandler preCheckoutHandler, SuccessfulPaymentHandler successfulPaymentHandler, InvoiceHandler invoiceHandler, CallbackHandler callbackHandler, CommandHandler commandHandler
     ) {
         this.props = props;
         this.numericMessageHandler = numericMessageHandler;
@@ -44,6 +48,7 @@ public class MnemocardsGeneratorBot extends TelegramLongPollingBot {
         this.successfulPaymentHandler = successfulPaymentHandler;
         this.invoiceHandler = invoiceHandler;
         this.callbackHandler = callbackHandler;
+        this.commandHandler = commandHandler;
         this.executorService = Executors.newFixedThreadPool(10); // Пул потоков для обработки
     }
 
@@ -66,8 +71,9 @@ public class MnemocardsGeneratorBot extends TelegramLongPollingBot {
                 callbackHandler.handle(update);
             } else if (containsDigits(update)) {
                 handleNumericMessage(update);
-//            } else if (update.hasCallbackQuery()) {
-//                handleCallbackQuery(update);
+            } else if (isCommand(update)) {
+                handleCommand(update);
+
 //            } else if (update.hasEditedMessage()) {
 //                handleEditedMessage(update);
 //            } else if (update.hasChannelPost()) {
@@ -81,6 +87,14 @@ public class MnemocardsGeneratorBot extends TelegramLongPollingBot {
         }
     }
 
+    private void handleCommand(Update update) {
+        var command = Command.fromValue(update.getMessage().getText());
+        var telegramId = update.getMessage().getFrom().getId();
+        var chatId = update.getMessage().getChatId();
+
+        commandHandler.handle(command, telegramId, chatId);
+    }
+
     private boolean containsInvoiceCommand(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
             String text = update.getMessage().getText();
@@ -89,6 +103,16 @@ public class MnemocardsGeneratorBot extends TelegramLongPollingBot {
         }
 
         return false;
+    }
+
+    private boolean isCommand(Update update) {
+        if (update.hasMessage() && update.getMessage().hasText()) {
+            String text = update.getMessage().getText();
+
+            return text.startsWith("/");
+        } else {
+            return false;
+        }
     }
 
     private boolean containsDigits(Update update) {
