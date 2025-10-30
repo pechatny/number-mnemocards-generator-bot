@@ -35,7 +35,6 @@ public class MnemocardsGeneratorBot extends TelegramLongPollingBot {
     private final CallbackHandler callbackHandler;
     private final CommandHandler commandHandler;
 
-
     public MnemocardsGeneratorBot(
         BotProperties props,
         TelegramUpdateMapper telegramUpdateMapper,
