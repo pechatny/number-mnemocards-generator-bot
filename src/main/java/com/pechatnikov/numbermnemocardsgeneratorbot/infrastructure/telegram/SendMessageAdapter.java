@@ -30,6 +30,7 @@ public class SendMessageAdapter implements SendMessageService {
             SendMessage.builder()
                 .text(message)
                 .chatId(chatId.toString())
+                .parseMode("Markdown")
                 .build()
         );
     }
