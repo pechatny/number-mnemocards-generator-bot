@@ -7,7 +7,7 @@ COPY src ./src
 RUN mvn package -DskipTests
 
 # Стадия запуска (оптимизированная)
-FROM openjdk:11-jre-slim
+FROM openjdk:11.0.16-jre-slim
 
 # Устанавливаем временную зону и очищаем кэш
 RUN apt-get update && \
