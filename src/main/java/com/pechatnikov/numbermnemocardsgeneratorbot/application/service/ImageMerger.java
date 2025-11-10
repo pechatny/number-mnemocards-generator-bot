@@ -48,7 +48,7 @@ public class ImageMerger {
                 if (numbersIterator.hasNext()) {
                     String number = numbersIterator.next();
                     String imagePath = NUMBERCARDS_DIR + number + JPG;
-                    log.debug("Путь к файлу: %s", imagePath );
+                    log.debug("Путь к файлу: {}", imagePath );
                     Resource resource = new ClassPathResource(imagePath);
 
                     try (InputStream inputStream = resource.getInputStream()) {
