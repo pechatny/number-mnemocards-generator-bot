@@ -21,6 +21,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 @Slf4j
 @Component
@@ -54,8 +55,18 @@ public class MnemocardsGeneratorBot extends TelegramLongPollingBot {
     @SneakyThrows
     @Override
     public void onUpdateReceived(Update update) {
+        logThreadPoolStatus();
         // Асинхронная обработка для избежания блокировки
         executorService.submit(() -> processUpdate(update));
+    }
+
+    private void logThreadPoolStatus() {
+
+        ThreadPoolExecutor executor = (ThreadPoolExecutor) this.executorService;
+        log.debug("Active threads: {}, Queue size: {}, Completed tasks: {}",
+            executor.getActiveCount(),
+            executor.getQueue().size(),
+            executor.getCompletedTaskCount());
     }
 
     private void processUpdate(Update update) {
