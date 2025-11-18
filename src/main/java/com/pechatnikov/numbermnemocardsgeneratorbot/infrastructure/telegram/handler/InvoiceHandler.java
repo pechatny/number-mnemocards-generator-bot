@@ -44,12 +44,14 @@ public class InvoiceHandler {
         );
 
         var payload = objectMapper.writeValueAsString(invoice.getPayload());
+        var providerData = objectMapper.writeValueAsString(invoice.getProviderData());
 
         paymentService.sendInvoice(
             invoice.getChatId(),
             invoice.getTitle(),
             invoice.getDescription(),
             payload,
+            providerData,
             paymentProperties.getToken(),
             invoice.getPrice().getCurrency().getCurrencyCode(),
             invoice.getPrice().getAmount().intValue()

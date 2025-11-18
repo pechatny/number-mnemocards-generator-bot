@@ -36,11 +36,13 @@ public class PaymentService {
     public Message sendInvoice(Invoice invoice) {
         try {
             String payload = objectMapper.writeValueAsString(invoice.getPayload());
+            String providerData = objectMapper.writeValueAsString(invoice.getProviderData());
             return sendInvoice(
                 invoice.getChatId(),
                 invoice.getTitle(),
                 invoice.getDescription(),
                 payload,
+                providerData,
                 paymentProperties.getToken(),
                 invoice.getPrice().getCurrency().getCurrencyCode(),
                 (int) invoice.getPrice().toMinorUnits()
@@ -56,6 +58,7 @@ public class PaymentService {
         String title,
         String description,
         String payload,
+        String providerData,
         String providerToken,
         String currency,
         Integer priceAmount
@@ -73,7 +76,15 @@ public class PaymentService {
         sendInvoice.setProviderToken(providerToken); // Токен платежной системы
         sendInvoice.setCurrency(currency); // "RUB", "USD", "EUR" и т.д.
         sendInvoice.setPrices(prices);
+        sendInvoice.setNeedEmail(true);
+        sendInvoice.setSendEmailToProvider(true);
+        sendInvoice.setProviderData(providerData);
 
+        try {
+            log.debug("SendInvoice Command {}", objectMapper.writeValueAsString(sendInvoice));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
         // Кнопка для оплаты (создается автоматически)
         // Дополнительные кнопки можно добавить через ReplyMarkup
 

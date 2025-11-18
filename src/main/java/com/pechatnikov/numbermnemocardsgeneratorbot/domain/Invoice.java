@@ -6,13 +6,15 @@ public class Invoice {
     private final String description;
     private final Payload payload;
     private final Money price;
+    private final ProviderData providerData;
 
-    Invoice(String chatId, String title, String description, Payload payload, Money price) {
+    Invoice(String chatId, String title, String description, Payload payload, Money price, ProviderData providerData) {
         this.chatId = chatId;
         this.title = title;
         this.description = description;
         this.payload = payload;
         this.price = price;
+        this.providerData = providerData;
     }
 
     public static InvoiceBuilder builder() {
@@ -39,10 +41,19 @@ public class Invoice {
         return this.price;
     }
 
-    public InvoiceBuilder toBuilder() {
-        return new InvoiceBuilder().chatId(this.chatId).title(this.title).description(this.description).payload(this.payload).price(this.price);
+    public ProviderData getProviderData() {
+        return providerData;
     }
 
+    public InvoiceBuilder toBuilder() {
+        return new InvoiceBuilder()
+            .chatId(this.chatId)
+            .title(this.title)
+            .description(this.description)
+            .payload(this.payload)
+            .price(this.price)
+            .providerData(this.providerData);
+    }
 
     public static class InvoiceBuilder {
         private String chatId;
@@ -50,6 +61,7 @@ public class Invoice {
         private String description;
         private Payload payload;
         private Money price;
+        private ProviderData providerData;
 
         InvoiceBuilder() {
         }
@@ -79,8 +91,13 @@ public class Invoice {
             return this;
         }
 
+        public InvoiceBuilder providerData(ProviderData providerData) {
+            this.providerData = providerData;
+            return this;
+        }
+
         public Invoice build() {
-            return new Invoice(this.chatId, this.title, this.description, this.payload, this.price);
+            return new Invoice(this.chatId, this.title, this.description, this.payload, this.price, this.providerData);
         }
 
         public String toString() {

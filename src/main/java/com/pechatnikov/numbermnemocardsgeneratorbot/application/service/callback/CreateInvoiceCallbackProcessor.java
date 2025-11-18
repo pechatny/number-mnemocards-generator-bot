@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.math.BigDecimal;
 import java.util.Currency;
 
 @Slf4j

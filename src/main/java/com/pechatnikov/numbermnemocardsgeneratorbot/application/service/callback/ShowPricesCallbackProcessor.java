@@ -51,7 +51,7 @@ public class ShowPricesCallbackProcessor implements CallbackProcessor {
             .messageId(callback.getMessageId())
             .build();
 
-
+// TODO Удалить мусор
 //        EditMessageText newMessage = new EditMessageText();
 //        newMessage.setChatId(callback.getChatId().toString());
 //        newMessage.setMessageId(callback.getMessageId());
@@ -74,7 +74,7 @@ public class ShowPricesCallbackProcessor implements CallbackProcessor {
         // Создаем inline клавиатуру
         InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
-        Stream.of(50, 100, 200).forEach(price -> {
+        Stream.of(60, 100, 200).forEach(price -> {
             List<InlineKeyboardButton> rowInline = new ArrayList<>();
             InlineKeyboardButton pricesButton = new InlineKeyboardButton();
             int tokenCount = price * tokenRate;

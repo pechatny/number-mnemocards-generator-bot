@@ -27,7 +27,7 @@ public class SendPreCheckoutAdapter implements SendPreCheckoutService {
 
     private void sendSafely(AnswerPreCheckoutQuery answer) {
         try {
-            log.info("AnswerPreCheckoutQuery отправлен!");
+            log.info("AnswerPreCheckoutQuery отправлен! {}", answer);
             telegramApiClient.execute(answer);
         } catch (TelegramApiException e) {
             log.error("Ошибка отправки AnswerPreCheckoutQuery: {}", answer, e);
