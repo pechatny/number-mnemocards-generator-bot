@@ -12,6 +12,7 @@ FROM openjdk:11.0.16-jre-slim
 # Устанавливаем временную зону и очищаем кэш
 RUN apt-get update && \
     apt-get install -y --no-install-recommends tzdata && \
+    apt-get install -y --no-install-recommends iputils-ping && \
     rm -rf /var/lib/apt/lists/* && \
     apt-get clean
 
