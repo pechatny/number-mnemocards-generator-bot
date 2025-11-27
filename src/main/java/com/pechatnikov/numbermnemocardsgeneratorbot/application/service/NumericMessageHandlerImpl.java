@@ -3,6 +3,7 @@ package com.pechatnikov.numbermnemocardsgeneratorbot.application.service;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.GetOrCreateUserCommand;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.MessageService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.NumericMessageHandler;
+import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.ShowPricesButtonUseCase;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.TokenBalanceService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.TokenTransactionService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.UserService;
@@ -33,7 +34,7 @@ public class NumericMessageHandlerImpl implements NumericMessageHandler {
     private final TokenTransactionService tokenTransactionService;
     private final TokenBalanceService tokenBalanceService;
     private final SendMessageService sendMessageService;
-    private final PaymentService paymentService;
+    private final ShowPricesButtonUseCase showPricesButtonUseCase;
 
     public NumericMessageHandlerImpl(
         UserService userService,
@@ -44,7 +45,7 @@ public class NumericMessageHandlerImpl implements NumericMessageHandler {
         TokenTransactionService tokenTransactionService,
         TokenBalanceService tokenBalanceService,
         SendMessageService sendMessageService,
-        PaymentService paymentService
+        ShowPricesButtonUseCase showPricesButtonUseCase
     ) {
         this.userService = userService;
         this.messageService = messageService;
@@ -54,7 +55,7 @@ public class NumericMessageHandlerImpl implements NumericMessageHandler {
         this.tokenTransactionService = tokenTransactionService;
         this.tokenBalanceService = tokenBalanceService;
         this.sendMessageService = sendMessageService;
-        this.paymentService = paymentService;
+        this.showPricesButtonUseCase = showPricesButtonUseCase;
     }
 
     @Override
@@ -72,7 +73,7 @@ public class NumericMessageHandlerImpl implements NumericMessageHandler {
         log.info("Необходимо {} токенов", countedTokens);
 
         if (checkTokenBalance(message, user, countedTokens)) {
-            paymentService.showPricesButton(message.getChatId());
+            showPricesButtonUseCase.showPricesButton(message.getChatId());
             return;
         }
 

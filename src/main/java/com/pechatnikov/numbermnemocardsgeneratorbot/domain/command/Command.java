@@ -5,7 +5,8 @@ import java.util.Map;
 
 public enum Command {
     START("/start"),
-    BALANCE("/balance");
+    BALANCE("/balance"),
+    BALANCE_REFILL("/balance_refill");
 
     private final String value;
 

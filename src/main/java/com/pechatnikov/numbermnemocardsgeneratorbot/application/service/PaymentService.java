@@ -2,22 +2,16 @@ package com.pechatnikov.numbermnemocardsgeneratorbot.application.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pechatnikov.numbermnemocardsgeneratorbot.application.service.callback.CallbackType;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.Invoice;
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.configuration.PaymentProperties;
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram.TelegramApiClient;
-import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram.dto.CallbackData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendInvoice;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.payments.LabeledPrice;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -96,44 +90,4 @@ public class PaymentService {
 
         return null;
     }
-
-    public void showPricesButton(Long chatId) {
-        SendMessage message = new SendMessage();
-        message.setChatId(chatId.toString());
-
-        // Создаем inline клавиатуру
-        InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
-        List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
-        List<InlineKeyboardButton> rowInline = new ArrayList<>();
-
-        // Создаем кнопку
-        InlineKeyboardButton pricesButton = new InlineKeyboardButton();
-        pricesButton.setText("💳 Показать цены");
-        String callbackData = null;
-        try {
-            callbackData = objectMapper.writeValueAsString(
-                CallbackData.builder()
-                    .type(CallbackType.SHOW_PRICES)
-                    .build()
-            );
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-
-        pricesButton.setCallbackData(callbackData);
-
-        rowInline.add(pricesButton);
-        rowsInline.add(rowInline);
-        markupInline.setKeyboard(rowsInline);
-
-        message.setReplyMarkup(markupInline);
-        message.setText("Нажмите кнопку ниже для выбора вариантов оплаты:");
-
-        try {
-            telegramApiClient.execute(message);
-        } catch (TelegramApiException e) {
-            log.error("Ошибка отправки кнопки оплаты. {}", e.getMessage());
-        }
-    }
-
 }

@@ -51,12 +51,6 @@ public class ShowPricesCallbackProcessor implements CallbackProcessor {
             .messageId(callback.getMessageId())
             .build();
 
-// TODO Удалить мусор
-//        EditMessageText newMessage = new EditMessageText();
-//        newMessage.setChatId(callback.getChatId().toString());
-//        newMessage.setMessageId(callback.getMessageId());
-//        newMessage.setText("💳 Введите сумму оплаты:");
-
         try {
             telegramApiClient.execute(deleteMessage);
         } catch (TelegramApiException e) {
