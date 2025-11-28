@@ -2,6 +2,7 @@ package com.pechatnikov.numbermnemocardsgeneratorbot.application.service.callbac
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.DeleteMessageService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.Callback;
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram.TelegramApiClient;
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram.dto.CallbackData;
@@ -9,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -23,10 +23,12 @@ import java.util.stream.Stream;
 public class ShowPricesCallbackProcessor implements CallbackProcessor {
     private final TelegramApiClient telegramApiClient;
     private final ObjectMapper objectMapper;
+    private final DeleteMessageService deleteMessageService;
 
-    public ShowPricesCallbackProcessor(TelegramApiClient telegramApiClient, ObjectMapper objectMapper) {
+    public ShowPricesCallbackProcessor(TelegramApiClient telegramApiClient, ObjectMapper objectMapper, DeleteMessageService deleteMessageService) {
         this.telegramApiClient = telegramApiClient;
         this.objectMapper = objectMapper;
+        this.deleteMessageService = deleteMessageService;
     }
 
     @Override
@@ -45,17 +47,7 @@ public class ShowPricesCallbackProcessor implements CallbackProcessor {
             throw new RuntimeException(e);
         }
 
-        // Обновляем сообщение
-        DeleteMessage deleteMessage = DeleteMessage.builder()
-            .chatId(callback.getChatId().toString())
-            .messageId(callback.getMessageId())
-            .build();
-
-        try {
-            telegramApiClient.execute(deleteMessage);
-        } catch (TelegramApiException e) {
-            throw new RuntimeException(e);
-        }
+        deleteMessageService.delete(callback.getChatId(), callback.getMessageId());
 
         showPrices(callback.getChatId().toString());
     }
@@ -74,19 +66,18 @@ public class ShowPricesCallbackProcessor implements CallbackProcessor {
             int tokenCount = price * tokenRate;
             pricesButton.setText(price + "₽ (" + tokenCount + " цифр)" );
 
-            String callbackData = null;
             try {
-                callbackData = objectMapper.writeValueAsString(
+                String callbackData = objectMapper.writeValueAsString(
                     CallbackData.builder()
                         .type(CallbackType.CREATE_INVOICE)
                         .value(price.toString())
                         .build()
                 );
+
+                pricesButton.setCallbackData(callbackData);
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
-
-            pricesButton.setCallbackData(callbackData);
 
             rowInline.add(pricesButton);
             rowsInline.add(rowInline);
