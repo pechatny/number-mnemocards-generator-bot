@@ -3,12 +3,12 @@ package com.pechatnikov.numbermnemocardsgeneratorbot.application.service.callbac
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.DeleteMessageService;
+import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.SendCallbackAnswerService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.Callback;
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram.TelegramApiClient;
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram.dto.CallbackData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
@@ -24,11 +24,13 @@ public class ShowPricesCallbackProcessor implements CallbackProcessor {
     private final TelegramApiClient telegramApiClient;
     private final ObjectMapper objectMapper;
     private final DeleteMessageService deleteMessageService;
+    private final SendCallbackAnswerService sendCallbackAnswerService;
 
-    public ShowPricesCallbackProcessor(TelegramApiClient telegramApiClient, ObjectMapper objectMapper, DeleteMessageService deleteMessageService) {
+    public ShowPricesCallbackProcessor(TelegramApiClient telegramApiClient, ObjectMapper objectMapper, DeleteMessageService deleteMessageService, SendCallbackAnswerService sendCallbackAnswerService) {
         this.telegramApiClient = telegramApiClient;
         this.objectMapper = objectMapper;
         this.deleteMessageService = deleteMessageService;
+        this.sendCallbackAnswerService = sendCallbackAnswerService;
     }
 
     @Override
@@ -38,14 +40,7 @@ public class ShowPricesCallbackProcessor implements CallbackProcessor {
 
     @Override
     public void process(Callback callback) {
-        AnswerCallbackQuery answer = new AnswerCallbackQuery();
-        answer.setCallbackQueryId(callback.getCallbackQueryId());
-        answer.setText("Запуск процесса оплаты...");
-        try {
-            telegramApiClient.execute(answer);
-        } catch (TelegramApiException e) {
-            throw new RuntimeException(e);
-        }
+        sendCallbackAnswerService.sendCallbackAnswer(callback.getCallbackQueryId(), "Запуск процесса оплаты...");
 
         deleteMessageService.delete(callback.getChatId(), callback.getMessageId());
 

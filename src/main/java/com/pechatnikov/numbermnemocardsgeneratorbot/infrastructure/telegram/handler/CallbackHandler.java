@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.service.callback.CallbackService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.Callback;
-import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram.TelegramApiClient;
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram.dto.CallbackData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -13,12 +12,10 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 @Slf4j
 @Component
 public class CallbackHandler {
-    private final TelegramApiClient telegramApiClient;
     private final CallbackService callbackService;
     private final ObjectMapper objectMapper;
 
-    public CallbackHandler(TelegramApiClient telegramApiClient, CallbackService callbackService, ObjectMapper objectMapper) {
-        this.telegramApiClient = telegramApiClient;
+    public CallbackHandler(CallbackService callbackService, ObjectMapper objectMapper) {
         this.callbackService = callbackService;
         this.objectMapper = objectMapper;
     }

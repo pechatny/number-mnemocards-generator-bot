@@ -3,6 +3,7 @@ package com.pechatnikov.numbermnemocardsgeneratorbot.application.service.callbac
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.SaveInvoiceMessageService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.UserService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.DeleteMessageService;
+import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.SendCallbackAnswerService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.service.InvoiceService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.service.PaymentService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.Callback;
@@ -10,38 +11,34 @@ import com.pechatnikov.numbermnemocardsgeneratorbot.domain.Invoice;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.InvoiceMessage;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.Money;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.user.User;
-import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram.TelegramApiClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.Currency;
 
 @Slf4j
 @Component
 public class CreateInvoiceCallbackProcessor implements CallbackProcessor {
-    private final TelegramApiClient telegramApiClient;
     private final PaymentService paymentService;
     private final UserService userService;
     private final InvoiceService invoiceService;
     private final SaveInvoiceMessageService saveInvoiceMessageService;
     private final DeleteMessageService deleteMessageService;
+    private final SendCallbackAnswerService sendCallbackAnswerService;
 
     public CreateInvoiceCallbackProcessor(
-        TelegramApiClient telegramApiClient,
         PaymentService paymentService,
         UserService userService,
         InvoiceService invoiceService,
         SaveInvoiceMessageService saveInvoiceMessageService,
-        DeleteMessageService deleteMessageService
+        DeleteMessageService deleteMessageService, SendCallbackAnswerService sendCallbackAnswerService
     ) {
-        this.telegramApiClient = telegramApiClient;
         this.paymentService = paymentService;
         this.userService = userService;
         this.invoiceService = invoiceService;
         this.saveInvoiceMessageService = saveInvoiceMessageService;
         this.deleteMessageService = deleteMessageService;
+        this.sendCallbackAnswerService = sendCallbackAnswerService;
     }
 
     @Override
@@ -51,14 +48,7 @@ public class CreateInvoiceCallbackProcessor implements CallbackProcessor {
 
     @Override
     public void process(Callback callback) {
-        AnswerCallbackQuery answer = new AnswerCallbackQuery();
-        answer.setCallbackQueryId(callback.getCallbackQueryId());
-        answer.setText("Запуск процесса оплаты...");
-        try {
-            telegramApiClient.execute(answer);
-        } catch (TelegramApiException e) {
-            throw new RuntimeException(e);
-        }
+        sendCallbackAnswerService.sendCallbackAnswer(callback.getCallbackQueryId(),  "Создается счёт на оплату...");
 
         User user = userService.findByTelegramId(callback.getTelegramId()).orElseThrow();
 
@@ -72,7 +62,6 @@ public class CreateInvoiceCallbackProcessor implements CallbackProcessor {
             "Пополнение баланса цифрами для преобразования в мнемокарточки в количестве: " + tokenCount + " шт.",
             price
         );
-
 
         log.debug("Удаляю сообщение callback. chatId={};messageId={}", callback.getChatId(), callback.getMessageId());
         deleteMessageService.delete(callback.getChatId(), callback.getMessageId());
