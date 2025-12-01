@@ -3,34 +3,35 @@ package com.pechatnikov.numbermnemocardsgeneratorbot.application.service.callbac
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.DeleteMessageService;
+import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.SendButtonsMessageService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.SendCallbackAnswerService;
+import com.pechatnikov.numbermnemocardsgeneratorbot.domain.ButtonData;
+import com.pechatnikov.numbermnemocardsgeneratorbot.domain.ButtonsMessage;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.Callback;
-import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram.TelegramApiClient;
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram.dto.CallbackData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Slf4j
 @Component
 public class ShowPricesCallbackProcessor implements CallbackProcessor {
-    private final TelegramApiClient telegramApiClient;
     private final ObjectMapper objectMapper;
     private final DeleteMessageService deleteMessageService;
     private final SendCallbackAnswerService sendCallbackAnswerService;
+    private final SendButtonsMessageService sendButtonsMessageService;
 
-    public ShowPricesCallbackProcessor(TelegramApiClient telegramApiClient, ObjectMapper objectMapper, DeleteMessageService deleteMessageService, SendCallbackAnswerService sendCallbackAnswerService) {
-        this.telegramApiClient = telegramApiClient;
+    private static final int TOKEN_RATE = 2;
+    private static final String BUTTON_TEXT_TEMPLATE = "%s₽ (%d цифр)";
+    private static final String SHOW_PRICES_MESSAGE_TEXT = "Выберите вариант оплаты. Курс: 1₽ = 2 цифры для преобразования в мнемокарточку.";
+
+    public ShowPricesCallbackProcessor(ObjectMapper objectMapper, DeleteMessageService deleteMessageService, SendCallbackAnswerService sendCallbackAnswerService, SendButtonsMessageService sendButtonsMessageService) {
         this.objectMapper = objectMapper;
         this.deleteMessageService = deleteMessageService;
         this.sendCallbackAnswerService = sendCallbackAnswerService;
+        this.sendButtonsMessageService = sendButtonsMessageService;
     }
 
     @Override
@@ -48,19 +49,12 @@ public class ShowPricesCallbackProcessor implements CallbackProcessor {
     }
 
     private void showPrices(String chatId) {
-        final int tokenRate = 2;
-        SendMessage message = new SendMessage();
-        message.setChatId(chatId);
+        var buttons = Stream.of(60, 100, 200).map(price -> {
+            var buttonDataBuilder = ButtonData.builder();
+            int tokenCount = price * TOKEN_RATE;
+            String buttonText = String.format(BUTTON_TEXT_TEMPLATE, price, tokenCount);
 
-        // Создаем inline клавиатуру
-        InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
-        List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
-        Stream.of(60, 100, 200).forEach(price -> {
-            List<InlineKeyboardButton> rowInline = new ArrayList<>();
-            InlineKeyboardButton pricesButton = new InlineKeyboardButton();
-            int tokenCount = price * tokenRate;
-            pricesButton.setText(price + "₽ (" + tokenCount + " цифр)" );
-
+            buttonDataBuilder.buttonText(buttonText);
             try {
                 String callbackData = objectMapper.writeValueAsString(
                     CallbackData.builder()
@@ -69,25 +63,21 @@ public class ShowPricesCallbackProcessor implements CallbackProcessor {
                         .build()
                 );
 
-                pricesButton.setCallbackData(callbackData);
+                buttonDataBuilder.buttonCallbackData(callbackData);
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
 
-            rowInline.add(pricesButton);
-            rowsInline.add(rowInline);
-        });
+            return buttonDataBuilder.build();
+        }).collect(Collectors.toList());
 
+        var buttonsMessage = ButtonsMessage.builder()
+            .chatId(chatId)
+            .message(SHOW_PRICES_MESSAGE_TEXT)
+            .buttons(buttons)
+            .build();
 
-        markupInline.setKeyboard(rowsInline);
-
-        message.setReplyMarkup(markupInline);
-        message.setText("Выберите вариант оплаты. Курс: 1₽ = 2 цифры для преобразования в мнемокарточку.");
-
-        try {
-            telegramApiClient.execute(message);
-        } catch (TelegramApiException e) {
-            log.error("Ошибка отправки кнопки оплаты. {}", e.getMessage());
-        }
+        sendButtonsMessageService.sendButtonsMessage(buttonsMessage);
     }
+
 }
