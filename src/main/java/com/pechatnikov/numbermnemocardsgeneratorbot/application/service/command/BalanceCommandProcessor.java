@@ -1,5 +1,6 @@
 package com.pechatnikov.numbermnemocardsgeneratorbot.application.service.command;
 
+import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.CommandProcessor;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.TokenBalanceService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.UserService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.SendMessageService;

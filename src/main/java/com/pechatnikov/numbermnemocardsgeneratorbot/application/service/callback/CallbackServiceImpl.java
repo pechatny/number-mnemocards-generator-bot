@@ -1,5 +1,6 @@
 package com.pechatnikov.numbermnemocardsgeneratorbot.application.service.callback;
 
+import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.CallbackService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.Callback;
 import org.springframework.stereotype.Service;
 

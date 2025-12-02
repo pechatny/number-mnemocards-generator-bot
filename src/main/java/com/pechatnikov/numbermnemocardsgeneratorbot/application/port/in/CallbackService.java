@@ -1,4 +1,4 @@
-package com.pechatnikov.numbermnemocardsgeneratorbot.application.service.callback;
+package com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in;
 
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.Callback;
 

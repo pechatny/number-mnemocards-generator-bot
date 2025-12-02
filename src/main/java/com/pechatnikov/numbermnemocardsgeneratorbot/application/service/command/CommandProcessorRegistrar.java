@@ -1,5 +1,6 @@
 package com.pechatnikov.numbermnemocardsgeneratorbot.application.service.command;
 
+import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.CommandProcessor;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.command.Command;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

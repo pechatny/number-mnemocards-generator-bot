@@ -2,7 +2,7 @@ package com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram.han
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pechatnikov.numbermnemocardsgeneratorbot.application.service.callback.CallbackService;
+import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.CallbackService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.Callback;
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram.dto.CallbackData;
 import lombok.extern.slf4j.Slf4j;

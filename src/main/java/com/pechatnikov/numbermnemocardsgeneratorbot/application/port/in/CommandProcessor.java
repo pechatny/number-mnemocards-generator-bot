@@ -1,5 +1,6 @@
-package com.pechatnikov.numbermnemocardsgeneratorbot.application.service.command;
+package com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in;
 
+import com.pechatnikov.numbermnemocardsgeneratorbot.application.service.command.CommandProcessorRegistrar;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.command.Command;
 import org.springframework.beans.factory.annotation.Autowired;
 

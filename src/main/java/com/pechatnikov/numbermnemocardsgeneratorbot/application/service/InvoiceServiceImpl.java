@@ -35,7 +35,7 @@ public class InvoiceServiceImpl implements InvoiceService{
             .providerData(providerData)
             .build();
 
-        log.debug("Данные для чеков у провайера providerData = {}", providerData.toString());
+        log.debug("Данные для чеков у провайдера providerData = {}", providerData.toString());
 
         return invoice;
     }
