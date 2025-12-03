@@ -25,6 +25,7 @@ import java.util.List;
 @Service
 public class NumericMessageHandlerImpl implements NumericMessageHandler {
     private final static String NOT_ENOUGH_TOKENS_MESSAGE = "Ваше число состоит из %d цифр. Вам доступно %d цифр";
+    public static final String MINIMAL_NUMBER_LENGTH_MESSAGE = "Минимальное число должно состоять из двух цифр. Например: 00, 01, 02";
 
     private final UserService userService;
     private final MessageService messageService;
@@ -69,6 +70,12 @@ public class NumericMessageHandlerImpl implements NumericMessageHandler {
 
         log.info("Расчет токенов");
         List<String> splittedNumberList = splitter.split(message.getMessage());
+
+        if(splittedNumberList.isEmpty()){
+            sendMessageService.sendMessage(message.getChatId(), MINIMAL_NUMBER_LENGTH_MESSAGE);
+            return;
+        }
+
         long countedTokens = countTokens(splittedNumberList);
         log.info("Необходимо {} токенов", countedTokens);
 
