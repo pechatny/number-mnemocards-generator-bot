@@ -1,5 +1,6 @@
 package com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram;
 
+import com.pechatnikov.numbermnemocardsgeneratorbot.application.exception.SendPhotoException;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.SendPhotoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -21,7 +22,15 @@ public class SendPhotoAdapter implements SendPhotoService {
 
     public void sendPhoto(Long chatId, File photo) {
         var sendPhotoCommand = getSendPhotoCommand(chatId, photo);
-        sendPhotoSafely(sendPhotoCommand);
+
+        try {
+            log.info("Начало отправки картинки пользователю");
+            telegramApiClient.execute(sendPhotoCommand);
+            log.info("Картинка отправлена пользователю!");
+        } catch (TelegramApiException e) {
+            log.error("Ошибка при отправке картинки. SendPhoto: {}", sendPhotoCommand, e);
+            throw new SendPhotoException("Ошибка при отправке картинки: " + e.getMessage(), e);
+        }
     }
 
     private SendPhoto getSendPhotoCommand(Long chatId, File photo) {
@@ -30,15 +39,4 @@ public class SendPhotoAdapter implements SendPhotoService {
             new InputFile(photo)
         );
     }
-
-    private void sendPhotoSafely(SendPhoto method) {
-        try {
-            log.info("Картинка отправлена пользователю!");
-            telegramApiClient.execute(method);
-        } catch (TelegramApiException e) {
-            log.error("Failed to execute SendPhoto: {}", method, e);
-        }
-    }
-
-
 }

@@ -1,5 +1,6 @@
 package com.pechatnikov.numbermnemocardsgeneratorbot.application.service;
 
+import com.pechatnikov.numbermnemocardsgeneratorbot.application.exception.SendPhotoException;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.GetOrCreateUserCommand;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.MessageService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.NumericMessageHandler;
@@ -15,6 +16,7 @@ import com.pechatnikov.numbermnemocardsgeneratorbot.domain.TokenTransaction;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.user.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.File;
 import java.io.IOException;
@@ -87,11 +89,15 @@ public class NumericMessageHandlerImpl implements NumericMessageHandler {
         log.info("Создать картинку");
         var file = imageMerger.mergeImages(splittedNumberList);
 
-        log.info("Отправить ответ");
-        sendPhotoService.sendPhoto(message.getChatId(), file);
-
-        log.info("Удалить файл картинки");
-        deleteFile(file);
+        try {
+            log.info("Отправить ответ");
+            sendPhotoService.sendPhoto(message.getChatId(), file);
+        } catch (SendPhotoException e) {
+            throw new SendPhotoException(e);
+        } finally {
+            log.info("Удалить файл картинки");
+            deleteFile(file);
+        }
 
         log.info("Записать транзакцию потраченных токенов");
         var tokenTransaction = TokenTransaction.builder()
