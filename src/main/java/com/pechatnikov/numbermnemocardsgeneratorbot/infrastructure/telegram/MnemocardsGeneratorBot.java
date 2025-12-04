@@ -5,7 +5,6 @@ import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.NumericM
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.command.Command;
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.configuration.BotProperties;
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram.handler.CallbackHandler;
-import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram.handler.InvoiceHandler;
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram.handler.PreCheckoutHandler;
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram.handler.SuccessfulPaymentHandler;
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram.mapper.TelegramUpdateMapper;
@@ -32,21 +31,23 @@ public class MnemocardsGeneratorBot extends TelegramLongPollingBot {
     private final NumericMessageHandler numericMessageHandler;
     private final PreCheckoutHandler preCheckoutHandler;
     private final SuccessfulPaymentHandler successfulPaymentHandler;
-    private final InvoiceHandler invoiceHandler;
     private final CallbackHandler callbackHandler;
     private final CommandHandler commandHandler;
 
     public MnemocardsGeneratorBot(
         BotProperties props,
         TelegramUpdateMapper telegramUpdateMapper,
-        NumericMessageHandler numericMessageHandler, PreCheckoutHandler preCheckoutHandler, SuccessfulPaymentHandler successfulPaymentHandler, InvoiceHandler invoiceHandler, CallbackHandler callbackHandler, CommandHandler commandHandler
+        NumericMessageHandler numericMessageHandler,
+        PreCheckoutHandler preCheckoutHandler,
+        SuccessfulPaymentHandler successfulPaymentHandler,
+        CallbackHandler callbackHandler,
+        CommandHandler commandHandler
     ) {
         this.props = props;
         this.numericMessageHandler = numericMessageHandler;
         this.telegramUpdateMapper = telegramUpdateMapper;
         this.preCheckoutHandler = preCheckoutHandler;
         this.successfulPaymentHandler = successfulPaymentHandler;
-        this.invoiceHandler = invoiceHandler;
         this.callbackHandler = callbackHandler;
         this.commandHandler = commandHandler;
         this.executorService = Executors.newFixedThreadPool(10); // Пул потоков для обработки
@@ -61,7 +62,6 @@ public class MnemocardsGeneratorBot extends TelegramLongPollingBot {
     }
 
     private void logThreadPoolStatus() {
-
         ThreadPoolExecutor executor = (ThreadPoolExecutor) this.executorService;
         log.debug("Active threads: {}, Queue size: {}, Completed tasks: {}",
             executor.getActiveCount(),
@@ -75,19 +75,12 @@ public class MnemocardsGeneratorBot extends TelegramLongPollingBot {
                 successfulPaymentHandler.handle(update.getMessage());
             } else if (update.hasPreCheckoutQuery()) {
                 preCheckoutHandler.handle(update.getPreCheckoutQuery());
-            } else if (containsInvoiceCommand(update)) {
-                invoiceHandler.handle(update);
             } else if (update.hasCallbackQuery()) {
                 callbackHandler.handle(update);
             } else if (containsDigits(update)) {
                 handleNumericMessage(update);
             } else if (isCommand(update)) {
                 handleCommand(update);
-
-//            } else if (update.hasEditedMessage()) {
-//                handleEditedMessage(update);
-//            } else if (update.hasChannelPost()) {
-//                handleChannelPost(update);
             } else {
                 log.warn("Unsupported update type: {}", update);
             }
@@ -103,16 +96,6 @@ public class MnemocardsGeneratorBot extends TelegramLongPollingBot {
         var chatId = update.getMessage().getChatId();
 
         commandHandler.handle(command, telegramId, chatId);
-    }
-
-    private boolean containsInvoiceCommand(Update update) {
-        if (update.hasMessage() && update.getMessage().hasText()) {
-            String text = update.getMessage().getText();
-
-            return "/invoice".equals(text);
-        }
-
-        return false;
     }
 
     private boolean isCommand(Update update) {
@@ -133,18 +116,6 @@ public class MnemocardsGeneratorBot extends TelegramLongPollingBot {
         } else {
             return false;
         }
-    }
-
-    private void handleTextMessage(Update update) {
-//        try {
-//            SendMessage response = messageHandler.handleMessage(update);
-//            if (response != null) {
-//                executeSafely(response);
-//            }
-//        } catch (Exception e) {
-//            log.error("Error handling text message", e);
-//            sendErrorMessage(update.getMessage().getChatId(), "Ошибка обработки сообщения");
-//        }
     }
 
     private void handleNumericMessage(Update update) {

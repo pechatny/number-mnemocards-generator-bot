@@ -71,7 +71,7 @@ public class NumericMessageHandlerImpl implements NumericMessageHandler {
         log.info("Расчет токенов");
         List<String> splittedNumberList = splitter.split(message.getMessage());
 
-        if(splittedNumberList.isEmpty()){
+        if (splittedNumberList.isEmpty()) {
             sendMessageService.sendMessage(message.getChatId(), MINIMAL_NUMBER_LENGTH_MESSAGE);
             return;
         }

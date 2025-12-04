@@ -4,8 +4,8 @@ import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.SaveInvo
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.UserService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.DeleteMessageService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.SendCallbackAnswerService;
+import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.SendInvoiceService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.service.InvoiceService;
-import com.pechatnikov.numbermnemocardsgeneratorbot.application.service.PaymentService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.Callback;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.Invoice;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.InvoiceMessage;
@@ -19,26 +19,27 @@ import java.util.Currency;
 @Slf4j
 @Component
 public class CreateInvoiceCallbackProcessor implements CallbackProcessor {
-    private final PaymentService paymentService;
     private final UserService userService;
     private final InvoiceService invoiceService;
     private final SaveInvoiceMessageService saveInvoiceMessageService;
     private final DeleteMessageService deleteMessageService;
     private final SendCallbackAnswerService sendCallbackAnswerService;
+    private final SendInvoiceService sendInvoiceService;
 
     public CreateInvoiceCallbackProcessor(
-        PaymentService paymentService,
         UserService userService,
         InvoiceService invoiceService,
         SaveInvoiceMessageService saveInvoiceMessageService,
-        DeleteMessageService deleteMessageService, SendCallbackAnswerService sendCallbackAnswerService
+        DeleteMessageService deleteMessageService,
+        SendCallbackAnswerService sendCallbackAnswerService,
+        SendInvoiceService sendInvoiceService
     ) {
-        this.paymentService = paymentService;
         this.userService = userService;
         this.invoiceService = invoiceService;
         this.saveInvoiceMessageService = saveInvoiceMessageService;
         this.deleteMessageService = deleteMessageService;
         this.sendCallbackAnswerService = sendCallbackAnswerService;
+        this.sendInvoiceService = sendInvoiceService;
     }
 
     @Override
@@ -66,12 +67,7 @@ public class CreateInvoiceCallbackProcessor implements CallbackProcessor {
         log.debug("Удаляю сообщение callback. chatId={};messageId={}", callback.getChatId(), callback.getMessageId());
         deleteMessageService.delete(callback.getChatId(), callback.getMessageId());
 
-        var telegramInvoiceMessage = paymentService.sendInvoice(invoice);
-
-        var invoiceMessage = InvoiceMessage.builder()
-            .chatId(telegramInvoiceMessage.getChatId())
-            .messageId(telegramInvoiceMessage.getMessageId())
-            .build();
+        InvoiceMessage invoiceMessage = sendInvoiceService.send(invoice);
 
         saveInvoiceMessageService.saveInvoiceMessage(invoice.getPayload().getOrderId(), invoiceMessage);
     }
