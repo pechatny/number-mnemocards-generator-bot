@@ -16,7 +16,6 @@ import com.pechatnikov.numbermnemocardsgeneratorbot.domain.TokenTransaction;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.user.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,8 +25,10 @@ import java.util.List;
 @Slf4j
 @Service
 public class NumericMessageHandlerImpl implements NumericMessageHandler {
-    private final static String NOT_ENOUGH_TOKENS_MESSAGE = "Ваше число состоит из %d цифр. Вам доступно %d цифр";
-    public static final String MINIMAL_NUMBER_LENGTH_MESSAGE = "Минимальное число должно состоять из двух цифр. Например: 00, 01, 02";
+    private static final String NOT_ENOUGH_TOKENS_MESSAGE = "Ваше число состоит из %d цифр. Вам доступно %d цифр";
+    private static final String MINIMAL_NUMBER_LENGTH_MESSAGE = "Минимальное число должно состоять из двух цифр. Например: 00, 01, 02";
+    private static final String MAX_MESSAGE_LENGTH_MESSAGE = "Максимальная длина сообщения не должна превышать 100 символов";
+    private static final int MAX_MESSAGE_LENGTH = 100;
 
     private final UserService userService;
     private final MessageService messageService;
@@ -66,6 +67,12 @@ public class NumericMessageHandlerImpl implements NumericMessageHandler {
         log.info("Получить или получить пользователя");
         var user = userService.getOrCreateUser(getOrCreateUserCommand);
         var messageWithUser = Message.toBuilder(message).user(user).build();
+
+        log.debug("Валидация максимального размера сообщения");
+        if (message.getMessage().length() > MAX_MESSAGE_LENGTH) {
+            sendMessageService.sendMessage(message.getChatId(), MAX_MESSAGE_LENGTH_MESSAGE);
+            return;
+        }
 
         log.info("Сохранить сообщение");
         message = messageService.save(messageWithUser);
