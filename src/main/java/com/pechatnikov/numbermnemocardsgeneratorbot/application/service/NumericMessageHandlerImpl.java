@@ -14,6 +14,7 @@ import com.pechatnikov.numbermnemocardsgeneratorbot.domain.Message;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.TokenBalance;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.TokenTransaction;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.user.User;
+import io.micrometer.core.annotation.Counted;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -62,6 +63,7 @@ public class NumericMessageHandlerImpl implements NumericMessageHandler {
         this.showPricesButtonUseCase = showPricesButtonUseCase;
     }
 
+    @Counted
     @Override
     public void handle(GetOrCreateUserCommand getOrCreateUserCommand, Message message) throws IOException {
         log.info("Получить или получить пользователя");
