@@ -25,7 +25,7 @@ public class UserEntityRepositoryTest extends BaseIntegrationTest {
 
     @Test
     void shouldSaveAndFindUser() {
-        String USERNAME = "motherfucker";
+        String USERNAME = "TestUserName";
         // Given
         UserEntity userEntity = UserEntity.builder()
                 .telegramId(1L)
