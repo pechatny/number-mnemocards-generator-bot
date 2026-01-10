@@ -13,19 +13,25 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class BaseIntegrationTest {
+public abstract class BaseIntegrationTest {
 
     @Container
-    public static PostgreSQLContainer<?> postgreSQLContainer =
-            new PostgreSQLContainer<>("postgres:15-alpine")
-                    .withDatabaseName("testdb")
-                    .withUsername("test")
-                    .withPassword("test");
+    public static final PostgreSQLContainer<?> postgreSQLContainer =
+        new PostgreSQLContainer<>("postgres:15-alpine")
+            .withDatabaseName("testdb")
+            .withUsername("test")
+            .withPassword("test");
 
     @DynamicPropertySource
     static void postgresqlProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.datasource.url", postgreSQLContainer::getJdbcUrl);
-        registry.add("spring.datasource.password", postgreSQLContainer::getPassword);
-        registry.add("spring.datasource.username", postgreSQLContainer::getUsername);
+        registry.add(
+            "spring.datasource.password",
+            postgreSQLContainer::getPassword
+        );
+        registry.add(
+            "spring.datasource.username",
+            postgreSQLContainer::getUsername
+        );
     }
 }

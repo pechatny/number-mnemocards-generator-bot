@@ -4,17 +4,21 @@ import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.TokenBa
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.TokenBalance;
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.persistence.jpa.SpringDataTokenBalanceRepository;
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.persistence.mapper.TokenBalancePersistenceMapper;
+import java.util.Optional;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.EntityManager;
-import java.util.Optional;
-
 @Component
-public class TokenBalanceRepositoryAdapter implements TokenBalanceRepositoryPort {
+public class TokenBalanceRepositoryAdapter
+    implements TokenBalanceRepositoryPort
+{
+
     private final SpringDataTokenBalanceRepository repository;
     private final TokenBalancePersistenceMapper mapper;
 
-    public TokenBalanceRepositoryAdapter(SpringDataTokenBalanceRepository repository, TokenBalancePersistenceMapper mapper) {
+    public TokenBalanceRepositoryAdapter(
+        SpringDataTokenBalanceRepository repository,
+        TokenBalancePersistenceMapper mapper
+    ) {
         this.repository = repository;
         this.mapper = mapper;
     }
