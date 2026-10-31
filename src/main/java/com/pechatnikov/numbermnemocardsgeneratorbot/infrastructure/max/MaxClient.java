@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.configuration.MaxBotProperties;
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.max.dto.MaxAttachmentRequest;
+import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.max.dto.MaxBotCommand;
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.max.dto.MaxButton;
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.max.dto.MaxCallbackAnswer;
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.max.dto.MaxError;
@@ -25,6 +26,7 @@ import org.springframework.web.client.RestTemplate;
 import java.io.File;
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Supplier;
 
 /**
@@ -113,6 +115,13 @@ public class MaxClient {
     public void answerCallback(String callbackId, String notification) {
         call(() -> apiRestTemplate.postForObject(
             "/answers?callback_id={callbackId}", new MaxCallbackAnswer(notification), JsonNode.class, callbackId
+        ));
+    }
+
+    /** {@code PATCH /me/commands} — меню команд бота, заменяет текущий список целиком. */
+    public void setCommands(List<MaxBotCommand> commands) {
+        call(() -> apiRestTemplate.exchange(
+            "/me/commands", HttpMethod.PATCH, new HttpEntity<>(Map.of("commands", commands)), JsonNode.class
         ));
     }
 

@@ -2,6 +2,7 @@ package com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.max;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.configuration.MaxBotProperties;
+import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.max.dto.MaxBotCommand;
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.max.dto.MaxButton;
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.max.dto.MaxUpdate;
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.max.dto.MaxUpdateList;
@@ -208,6 +209,23 @@ class MaxClientTest {
             .andRespond(withSuccess(SUCCESS, MediaType.APPLICATION_JSON));
 
         client.answerCallback("cb+1", "Готово");
+
+        api.verify();
+    }
+
+    @Test
+    void shouldSetBotCommands() {
+        api.expect(requestTo(BASE_URL + "/me/commands"))
+            .andExpect(method(HttpMethod.PATCH))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, TOKEN))
+            .andExpect(content().json(
+                "{\"commands\":[{\"name\":\"start\",\"description\":\"Как пользоваться ботом\"},{\"name\":\"balance\"}]}", true))
+            .andRespond(withSuccess("{\"commands\":[]}", MediaType.APPLICATION_JSON));
+
+        client.setCommands(List.of(
+            new MaxBotCommand("start", "Как пользоваться ботом"),
+            new MaxBotCommand("balance", null)
+        ));
 
         api.verify();
     }

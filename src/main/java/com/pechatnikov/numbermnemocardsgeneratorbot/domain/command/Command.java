@@ -4,11 +4,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum Command {
-    START("/start"),
-    BALANCE("/balance"),
-    BALANCE_REFILL("/balance_refill");
+    START("/start", "Как пользоваться ботом"),
+    BALANCE("/balance", "Баланс цифр"),
+    BALANCE_REFILL("/balance_refill", "Пополнить баланс");
 
     private final String value;
+    /** Подпись команды в меню мессенджера */
+    private final String description;
 
     private static final Map<String, Command> VALUE_MAP = new HashMap<>();
 
@@ -18,8 +20,17 @@ public enum Command {
         }
     }
 
-    Command(String value) {
+    Command(String value, String description) {
         this.value = value;
+        this.description = description;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public static Command fromValue(String value) {
