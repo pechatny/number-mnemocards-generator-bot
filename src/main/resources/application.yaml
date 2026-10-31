@@ -16,8 +16,20 @@ spring:
     url: ${spring.datasource.url}
     contexts: prod,dev
 bot:
-  name: NumberMnemocardsGeneratorBot
-  token: ${BOT_TOKEN}
-  chat-id: ${BOT_CHAT_ID}
+  telegram:
+    enabled: ${TELEGRAM_BOT_ENABLED:false}
+    name: NumberMnemocardsGeneratorBot
+    token: ${BOT_TOKEN:}
+    payments-enabled: true
+  max:
+    enabled: ${MAX_BOT_ENABLED:true}
+    token: ${MAX_BOT_TOKEN:}
+    payments-enabled: false
+    polling:
+      timeout-seconds: 30
+      limit: 100
+# Автоконфигурация telegrambots-spring-boot-starter поднимается только вместе с Telegram-ботом
+telegrambots:
+  enabled: ${bot.telegram.enabled}
 payment:
-  token: ${PAYMENT_TOKEN}
+  token: ${PAYMENT_TOKEN:}

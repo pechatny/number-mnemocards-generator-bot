@@ -1,12 +1,14 @@
 package com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram;
 
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.SendPreCheckoutService;
+import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.configuration.ConditionalOnTelegramBot;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.AnswerPreCheckoutQuery;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @Slf4j
+@ConditionalOnTelegramBot
 @Component
 public class SendPreCheckoutAdapter implements SendPreCheckoutService {
     private final TelegramApiClient telegramApiClient;

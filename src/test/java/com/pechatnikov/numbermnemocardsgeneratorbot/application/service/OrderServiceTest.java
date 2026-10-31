@@ -3,6 +3,7 @@ package com.pechatnikov.numbermnemocardsgeneratorbot.application.service;
 import com.pechatnikov.numbermnemocardsgeneratorbot.BaseIntegrationTest;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.GetOrCreateUserCommand;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.UserService;
+import com.pechatnikov.numbermnemocardsgeneratorbot.domain.BotPlatform;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.Money;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.order.Order;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.order.OrderStatus;
@@ -28,7 +29,8 @@ class OrderServiceTest extends BaseIntegrationTest {
         GetOrCreateUserCommand getOrCreateUserCommand = GetOrCreateUserCommand.builder()
             .setUsername("username")
             .setFirstname("firstname")
-            .setTelegramId(1L)
+            .setPlatform(BotPlatform.TELEGRAM)
+            .setExternalId(1L)
             .setLastname("lastname")
             .build();
 
@@ -49,7 +51,8 @@ class OrderServiceTest extends BaseIntegrationTest {
         GetOrCreateUserCommand getOrCreateUserCommand = GetOrCreateUserCommand.builder()
             .setUsername("username")
             .setFirstname("firstname")
-            .setTelegramId(1L)
+            .setPlatform(BotPlatform.TELEGRAM)
+            .setExternalId(1L)
             .setLastname("lastname")
             .build();
 
@@ -70,7 +73,8 @@ class OrderServiceTest extends BaseIntegrationTest {
         GetOrCreateUserCommand getOrCreateUserCommand = GetOrCreateUserCommand.builder()
             .setUsername("username")
             .setFirstname("firstname")
-            .setTelegramId(1L)
+            .setPlatform(BotPlatform.TELEGRAM)
+            .setExternalId(1L)
             .setLastname("lastname")
             .build();
 

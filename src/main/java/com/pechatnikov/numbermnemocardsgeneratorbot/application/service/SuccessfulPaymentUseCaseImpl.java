@@ -36,6 +36,7 @@ public class SuccessfulPaymentUseCaseImpl implements SuccessfulPaymentUseCase {
     public void handle(SuccessfulPayment successfulPayment) {
         Long orderId = successfulPayment.getInvoicePayload().getOrderId();
         Order order = orderService.findById(orderId).orElseThrow();
+        var platform = order.getUser().getPlatform();
 
         log.info("Записать транзакцию начисления токенов");
         var tokenTransaction = TokenTransaction.builder()
@@ -50,13 +51,17 @@ public class SuccessfulPaymentUseCaseImpl implements SuccessfulPaymentUseCase {
             orderService.updateStatus(order, OrderStatus.COMPLETED);
 
             log.debug("Удаляю сообщение с кнопкой на оплату");
-            deleteMessageService.delete(order.getInvoiceMessage().getChatId(), order.getInvoiceMessage().getMessageId());
+            deleteMessageService.delete(
+                platform,
+                order.getInvoiceMessage().getChatId(),
+                String.valueOf(order.getInvoiceMessage().getMessageId())
+            );
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
         TokenBalance balance = tokenBalanceService.findOrCreateTokenBalanceForUser(order.getUser());
         String balanceMessage = "Ваш баланс цифр: " + balance.getBalance() + " шт.";
-        sendMessageService.sendMessage(order.getInvoiceMessage().getChatId(), balanceMessage);
+        sendMessageService.sendMessage(platform, order.getInvoiceMessage().getChatId(), balanceMessage);
     }
 }

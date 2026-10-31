@@ -1,13 +1,16 @@
 package com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in;
 
+import com.pechatnikov.numbermnemocardsgeneratorbot.domain.BotPlatform;
 public class GetOrCreateUserCommand {
-    private final Long telegramId;
+    private final BotPlatform platform;
+    private final Long externalId;
     private final String username;
     private final String firstname;
     private final String lastname;
 
-    private GetOrCreateUserCommand(Long telegramId, String username, String firstname, String lastname) {
-        this.telegramId = telegramId;
+    private GetOrCreateUserCommand(BotPlatform platform, Long externalId, String username, String firstname, String lastname) {
+        this.platform = platform;
+        this.externalId = externalId;
         this.username = username;
         this.firstname = firstname;
         this.lastname = lastname;
@@ -18,13 +21,19 @@ public class GetOrCreateUserCommand {
     }
 
     public static final class GetOrCreateUserCommandBuilder {
-        private Long telegramId;
+        private BotPlatform platform;
+        private Long externalId;
         private String username;
         private String firstname;
         private String lastname;
 
-        public GetOrCreateUserCommand.GetOrCreateUserCommandBuilder setTelegramId(Long telegramId) {
-            this.telegramId = telegramId;
+        public GetOrCreateUserCommand.GetOrCreateUserCommandBuilder setPlatform(BotPlatform platform) {
+            this.platform = platform;
+            return this;
+        }
+
+        public GetOrCreateUserCommand.GetOrCreateUserCommandBuilder setExternalId(Long externalId) {
+            this.externalId = externalId;
             return this;
         }
 
@@ -44,12 +53,16 @@ public class GetOrCreateUserCommand {
         }
 
         public GetOrCreateUserCommand build() {
-            return new GetOrCreateUserCommand(telegramId, username, firstname, lastname);
+            return new GetOrCreateUserCommand(platform, externalId, username, firstname, lastname);
         }
     }
 
-    public Long getTelegramId() {
-        return telegramId;
+    public BotPlatform getPlatform() {
+        return platform;
+    }
+
+    public Long getExternalId() {
+        return externalId;
     }
 
     public String getUsername() {

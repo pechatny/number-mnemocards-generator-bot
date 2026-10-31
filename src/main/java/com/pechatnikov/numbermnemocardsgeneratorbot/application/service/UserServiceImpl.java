@@ -4,6 +4,7 @@ import com.pechatnikov.numbermnemocardsgeneratorbot.application.mapper.GetOrCrea
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.GetOrCreateUserCommand;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.UserService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.UserRepositoryPort;
+import com.pechatnikov.numbermnemocardsgeneratorbot.domain.BotPlatform;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.user.User;
 import org.springframework.stereotype.Service;
 
@@ -25,14 +26,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getOrCreateUser(GetOrCreateUserCommand getOrCreateUserCommand) {
-        return userRepositoryPort.findByTelegramId(getOrCreateUserCommand.getTelegramId()).orElseGet(() ->
+        return userRepositoryPort.findByPlatformAndExternalId(
+            getOrCreateUserCommand.getPlatform(),
+            getOrCreateUserCommand.getExternalId()
+        ).orElseGet(() ->
             create(getOrCreateUserCommand)
         );
     }
 
     @Override
-    public Optional<User> findByTelegramId(Long telegramId) {
-        return userRepositoryPort.findByTelegramId(telegramId);
+    public Optional<User> findByPlatformAndExternalId(BotPlatform platform, Long externalId) {
+        return userRepositoryPort.findByPlatformAndExternalId(platform, externalId);
     }
 
 }

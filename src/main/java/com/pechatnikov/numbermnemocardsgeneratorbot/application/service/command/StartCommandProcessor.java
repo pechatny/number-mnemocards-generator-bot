@@ -3,6 +3,7 @@ package com.pechatnikov.numbermnemocardsgeneratorbot.application.service.command
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.CommandProcessor;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.SendMessageService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.command.Command;
+import com.pechatnikov.numbermnemocardsgeneratorbot.domain.command.CommandContext;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.Executors;
@@ -71,17 +72,20 @@ public class StartCommandProcessor implements CommandProcessor {
     }
 
     @Override
-    public void process(Long telegramId, Long chatId) {
-        sendMessageService.sendMessage(chatId, START_MESSAGE);
+    public void process(CommandContext context) {
+        var platform = context.getPlatform();
+        var chatId = context.getChatId();
+
+        sendMessageService.sendMessage(platform, chatId, START_MESSAGE);
 
         scheduler.schedule(() ->
-                sendMessageService.sendMessage(chatId, START_MESSAGE_2),
+                sendMessageService.sendMessage(platform, chatId, START_MESSAGE_2),
             15,
             TimeUnit.SECONDS
         );
 
         scheduler.schedule(
-            () -> sendMessageService.sendMessage(chatId, START_MESSAGE_3),
+            () -> sendMessageService.sendMessage(platform, chatId, START_MESSAGE_3),
             35,
             TimeUnit.SECONDS
         );

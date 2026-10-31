@@ -1,21 +1,22 @@
 package com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram;
 
-import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.SendCallbackAnswerService;
+import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.configuration.ConditionalOnTelegramBot;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @Slf4j
+@ConditionalOnTelegramBot
 @Component
-public class SendCallbackAnswerAdapter implements SendCallbackAnswerService {
+public class SendCallbackAnswerAdapter {
     private final TelegramApiClient telegramApiClient;
 
     public SendCallbackAnswerAdapter(TelegramApiClient telegramApiClient) {
         this.telegramApiClient = telegramApiClient;
     }
 
-    @Override
     public void sendCallbackAnswer(String callbackId, String message) {
         AnswerCallbackQuery answer = new AnswerCallbackQuery();
         answer.setCallbackQueryId(callbackId);

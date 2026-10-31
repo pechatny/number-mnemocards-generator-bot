@@ -3,6 +3,7 @@ package com.pechatnikov.numbermnemocardsgeneratorbot.application.service.callbac
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.SaveInvoiceMessageService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.UserService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.DeleteMessageService;
+import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.PaymentAvailabilityPort;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.SendCallbackAnswerService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.SendInvoiceService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.service.InvoiceService;
@@ -25,6 +26,7 @@ public class CreateInvoiceCallbackProcessor implements CallbackProcessor {
     private final DeleteMessageService deleteMessageService;
     private final SendCallbackAnswerService sendCallbackAnswerService;
     private final SendInvoiceService sendInvoiceService;
+    private final PaymentAvailabilityPort paymentAvailabilityPort;
 
     public CreateInvoiceCallbackProcessor(
         UserService userService,
@@ -32,7 +34,8 @@ public class CreateInvoiceCallbackProcessor implements CallbackProcessor {
         SaveInvoiceMessageService saveInvoiceMessageService,
         DeleteMessageService deleteMessageService,
         SendCallbackAnswerService sendCallbackAnswerService,
-        SendInvoiceService sendInvoiceService
+        SendInvoiceService sendInvoiceService,
+        PaymentAvailabilityPort paymentAvailabilityPort
     ) {
         this.userService = userService;
         this.invoiceService = invoiceService;
@@ -40,6 +43,7 @@ public class CreateInvoiceCallbackProcessor implements CallbackProcessor {
         this.deleteMessageService = deleteMessageService;
         this.sendCallbackAnswerService = sendCallbackAnswerService;
         this.sendInvoiceService = sendInvoiceService;
+        this.paymentAvailabilityPort = paymentAvailabilityPort;
     }
 
     @Override
@@ -49,9 +53,16 @@ public class CreateInvoiceCallbackProcessor implements CallbackProcessor {
 
     @Override
     public void process(Callback callback) {
-        sendCallbackAnswerService.sendCallbackAnswer(callback.getCallbackQueryId(),  "Создается счёт на оплату...");
+        if (!paymentAvailabilityPort.isAvailable(callback.getPlatform())) {
+            sendCallbackAnswerService.sendCallbackAnswer(
+                callback.getPlatform(), callback.getCallbackQueryId(), PaymentAvailabilityPort.PAYMENTS_UNAVAILABLE_MESSAGE
+            );
+            return;
+        }
 
-        User user = userService.findByTelegramId(callback.getTelegramId()).orElseThrow();
+        sendCallbackAnswerService.sendCallbackAnswer(callback.getPlatform(), callback.getCallbackQueryId(), "Создается счёт на оплату...");
+
+        User user = userService.findByPlatformAndExternalId(callback.getPlatform(), callback.getExternalUserId()).orElseThrow();
 
         Money price = Money.of(callback.getValue(), Currency.getInstance("RUB"));
 
@@ -65,7 +76,7 @@ public class CreateInvoiceCallbackProcessor implements CallbackProcessor {
         );
 
         log.debug("Удаляю сообщение callback. chatId={};messageId={}", callback.getChatId(), callback.getMessageId());
-        deleteMessageService.delete(callback.getChatId(), callback.getMessageId());
+        deleteMessageService.delete(callback.getPlatform(), callback.getChatId(), callback.getMessageId());
 
         InvoiceMessage invoiceMessage = sendInvoiceService.send(invoice);
 

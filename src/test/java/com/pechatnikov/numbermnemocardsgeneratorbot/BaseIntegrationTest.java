@@ -6,21 +6,23 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
-@Testcontainers
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public abstract class BaseIntegrationTest {
 
-    @Container
+    // Один контейнер на весь прогон: Spring кэширует контекст между тест-классами,
+    // поэтому контейнер не должен останавливаться после каждого класса
     public static final PostgreSQLContainer<?> postgreSQLContainer =
         new PostgreSQLContainer<>("postgres:15-alpine")
             .withDatabaseName("testdb")
             .withUsername("test")
             .withPassword("test");
+
+    static {
+        postgreSQLContainer.start();
+    }
 
     @DynamicPropertySource
     static void postgresqlProperties(DynamicPropertyRegistry registry) {
