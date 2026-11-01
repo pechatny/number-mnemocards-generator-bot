@@ -137,6 +137,7 @@ class MaxClientTest {
         api.expect(requestTo(BASE_URL + "/messages?chat_id=42"))
             .andExpect(method(HttpMethod.POST))
             .andExpect(jsonPath("$.text").value("Выберите"))
+            .andExpect(jsonPath("$.format").value("markdown"))
             .andExpect(jsonPath("$.attachments[0].type").value("inline_keyboard"))
             .andExpect(jsonPath("$.attachments[0].payload.buttons[0][0].type").value("callback"))
             .andExpect(jsonPath("$.attachments[0].payload.buttons[0][0].text").value("60₽"))

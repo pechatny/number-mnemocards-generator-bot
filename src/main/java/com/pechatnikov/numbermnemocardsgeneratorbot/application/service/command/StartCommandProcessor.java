@@ -1,11 +1,22 @@
 package com.pechatnikov.numbermnemocardsgeneratorbot.application.service.command;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.CommandProcessor;
+import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.PaymentAvailabilityPort;
+import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.SendButtonsMessageService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.SendMessageService;
+import com.pechatnikov.numbermnemocardsgeneratorbot.application.service.callback.CallbackType;
+import com.pechatnikov.numbermnemocardsgeneratorbot.domain.BotPlatform;
+import com.pechatnikov.numbermnemocardsgeneratorbot.domain.ButtonData;
+import com.pechatnikov.numbermnemocardsgeneratorbot.domain.ButtonsMessage;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.command.Command;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.command.CommandContext;
+import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram.dto.CallbackData;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -15,6 +26,14 @@ public class StartCommandProcessor implements CommandProcessor {
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(5);
 
     private final SendMessageService sendMessageService;
+    private final SendButtonsMessageService sendButtonsMessageService;
+    private final PaymentAvailabilityPort paymentAvailabilityPort;
+    private final ObjectMapper objectMapper;
+
+    static final String BALANCE_BUTTON_TEXT = "💰 Баланс";
+    static final String HELP_BUTTON_TEXT = "ℹ️ Как пользоваться";
+    static final String REFILL_BUTTON_TEXT = "💳 Пополнить баланс";
+
     private final static String START_MESSAGE = "*Добро пожаловать в бот для генерации образных кодов!*\n" +
         "\n" +
         "Этот бот помогает запоминать любые числа с помощью мнемотехники (системы «Джордано»). \n" +
@@ -62,8 +81,16 @@ public class StartCommandProcessor implements CommandProcessor {
             "Узнайте больше о системе запоминания: \n" +
             "https://mnemonikon.ru";
 
-    public StartCommandProcessor(SendMessageService sendMessageService) {
+    public StartCommandProcessor(
+        SendMessageService sendMessageService,
+        SendButtonsMessageService sendButtonsMessageService,
+        PaymentAvailabilityPort paymentAvailabilityPort,
+        ObjectMapper objectMapper
+    ) {
         this.sendMessageService = sendMessageService;
+        this.sendButtonsMessageService = sendButtonsMessageService;
+        this.paymentAvailabilityPort = paymentAvailabilityPort;
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -76,7 +103,13 @@ public class StartCommandProcessor implements CommandProcessor {
         var platform = context.getPlatform();
         var chatId = context.getChatId();
 
-        sendMessageService.sendMessage(platform, chatId, START_MESSAGE);
+        // Кнопки — у первого сообщения, чтобы появились сразу, без ожидания остальных частей
+        sendButtonsMessageService.sendButtonsMessage(ButtonsMessage.builder()
+            .platform(platform)
+            .chatId(chatId.toString())
+            .message(START_MESSAGE)
+            .buttons(commandButtons(platform))
+            .build());
 
         scheduler.schedule(() ->
                 sendMessageService.sendMessage(platform, chatId, START_MESSAGE_2),
@@ -89,5 +122,33 @@ public class StartCommandProcessor implements CommandProcessor {
             35,
             TimeUnit.SECONDS
         );
+    }
+
+    private List<ButtonData> commandButtons(BotPlatform platform) {
+        List<ButtonData> buttons = new ArrayList<>();
+        buttons.add(commandButton(BALANCE_BUTTON_TEXT, Command.BALANCE));
+        if (paymentAvailabilityPort.isAvailable(platform)) {
+            buttons.add(commandButton(REFILL_BUTTON_TEXT, Command.BALANCE_REFILL));
+        }
+        buttons.add(commandButton(HELP_BUTTON_TEXT, Command.START));
+        return buttons;
+    }
+
+    private ButtonData commandButton(String text, Command command) {
+        try {
+            String callbackData = objectMapper.writeValueAsString(
+                CallbackData.builder()
+                    .type(CallbackType.RUN_COMMAND)
+                    .value(command.name())
+                    .build()
+            );
+
+            return ButtonData.builder()
+                .buttonText(text)
+                .buttonCallbackData(callbackData)
+                .build();
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

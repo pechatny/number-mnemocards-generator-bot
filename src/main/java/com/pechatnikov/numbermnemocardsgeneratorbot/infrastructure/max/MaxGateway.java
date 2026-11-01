@@ -95,7 +95,7 @@ public class MaxGateway implements MessengerGateway {
 
     private void sendButtons(Long chatId, String message, List<List<MaxButton>> rows) {
         try {
-            maxClient.sendButtons(chatId, message, rows);
+            maxClient.sendButtons(chatId, MaxMarkdown.fromTelegramMarkdown(message), rows);
             log.debug("Отправлено сообщение c кнопками пользователю Max: chatId={}", chatId);
         } catch (MaxApiException e) {
             log.error("Ошибка отправки сообщения с кнопками в Max: chatId={}", chatId, e);

@@ -44,6 +44,7 @@ public class SendButtonsMessageAdapter {
 
         message.setReplyMarkup(markupInline);
         message.setText(buttonsMessage.getMessage());
+        message.setParseMode("Markdown");
 
         try {
             telegramApiClient.execute(message);

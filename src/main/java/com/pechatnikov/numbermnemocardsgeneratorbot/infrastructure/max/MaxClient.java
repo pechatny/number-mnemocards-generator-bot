@@ -81,6 +81,7 @@ public class MaxClient {
     public void sendButtons(Long chatId, String text, List<List<MaxButton>> rows) {
         sendMessage(chatId, MaxNewMessageBody.builder()
             .text(text)
+            .format(MaxNewMessageBody.FORMAT_MARKDOWN)
             .attachments(List.of(MaxAttachmentRequest.inlineKeyboard(rows)))
             .build());
     }

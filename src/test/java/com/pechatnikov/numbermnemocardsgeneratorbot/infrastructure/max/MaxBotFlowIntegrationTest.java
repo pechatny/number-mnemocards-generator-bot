@@ -81,7 +81,18 @@ class MaxBotFlowIntegrationTest extends BaseIntegrationTest {
     void shouldSendWelcomeOnStartButton() {
         deliver(MaxTestData.botStarted());
 
-        verify(maxClient, timeout(TIMEOUT_MILLIS)).sendText(eq(MaxTestData.CHAT_ID), startsWith("**Добро пожаловать"));
+        verify(maxClient, timeout(TIMEOUT_MILLIS)).sendButtons(eq(MaxTestData.CHAT_ID), startsWith("**Добро пожаловать"), anyList());
+    }
+
+    @Test
+    void shouldRunCommandFromWelcomeButton() {
+        var update = MaxTestData.callback("{\"type\":\"RUN_COMMAND\",\"value\":\"BALANCE\"}");
+        update.getCallback().getUser().setUserId(900_003L);
+
+        deliver(update);
+
+        verify(maxClient, timeout(TIMEOUT_MILLIS)).sendText(MaxTestData.CHAT_ID, "Ваш баланс цифр 100 шт.");
+        verify(maxClient).answerCallback("cb-1", "Баланс цифр");
     }
 
     @Test

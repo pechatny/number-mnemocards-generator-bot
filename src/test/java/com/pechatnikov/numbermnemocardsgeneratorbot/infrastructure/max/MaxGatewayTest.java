@@ -123,6 +123,19 @@ class MaxGatewayTest {
     }
 
     @Test
+    void shouldConvertButtonsMessageToMaxMarkdown() {
+        ButtonsMessage message = ButtonsMessage.builder()
+            .chatId("42")
+            .message("*Добро пожаловать*")
+            .buttons(List.of(ButtonData.builder().buttonText("💰 Баланс").buttonCallbackData("p").build()))
+            .build();
+
+        gateway.sendButtonsMessage(message);
+
+        verify(maxClient).sendButtons(eq(42L), eq("**Добро пожаловать**"), anyList());
+    }
+
+    @Test
     void shouldLogAndSwallowButtonErrors() {
         doThrow(API_ERROR).when(maxClient).sendButtons(anyLong(), anyString(), anyList());
         ButtonMessage message = ButtonMessage.builder()
