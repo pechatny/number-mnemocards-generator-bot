@@ -1,5 +1,5 @@
 # Стадия сборки
-FROM maven:3.8.4-openjdk-11 AS builder
+FROM maven:3.9-eclipse-temurin-11 AS builder
 WORKDIR /app
 COPY pom.xml .
 RUN mvn dependency:go-offline -B
@@ -7,7 +7,8 @@ COPY src ./src
 RUN mvn package -DskipTests
 
 # Стадия запуска (оптимизированная)
-FROM openjdk:11.0.16-jre-slim
+# openjdk-образы не обновляются с 2022, их Debian 11 снят с поддержки — apt-get install падал с 404
+FROM eclipse-temurin:11-jre
 
 # Устанавливаем временную зону и очищаем кэш
 RUN apt-get update && \
