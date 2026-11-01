@@ -1,16 +1,19 @@
 package com.pechatnikov.numbermnemocardsgeneratorbot.domain.user;
 
+import com.pechatnikov.numbermnemocardsgeneratorbot.domain.BotPlatform;
 public class User {
     private final Long id;
-    private final Long telegramId;
+    private final BotPlatform platform;
+    private final Long externalId;
     private final String username;
     private final String firstname;
     private final String lastname;
     private final UserState state;
 
-    private User(Long id, Long telegramId, String username, String firstname, String lastname, UserState state) {
+    private User(Long id, BotPlatform platform, Long externalId, String username, String firstname, String lastname, UserState state) {
         this.id = id;
-        this.telegramId = telegramId;
+        this.platform = platform;
+        this.externalId = externalId;
         this.username = username;
         this.firstname = firstname;
         this.lastname = lastname;
@@ -23,7 +26,8 @@ public class User {
 
     public static final class UserBuilder {
         private Long id;
-        private Long telegramId;
+        private BotPlatform platform;
+        private Long externalId;
         private String username;
         private String firstname;
         private String lastname;
@@ -34,8 +38,13 @@ public class User {
             return this;
         }
 
-        public UserBuilder setTelegramId(Long telegramId) {
-            this.telegramId = telegramId;
+        public UserBuilder setPlatform(BotPlatform platform) {
+            this.platform = platform;
+            return this;
+        }
+
+        public UserBuilder setExternalId(Long externalId) {
+            this.externalId = externalId;
             return this;
         }
 
@@ -60,7 +69,7 @@ public class User {
         }
 
         public User build() {
-            return new User(id, telegramId, username, firstname, lastname, state);
+            return new User(id, platform, externalId, username, firstname, lastname, state);
         }
     }
 
@@ -68,8 +77,12 @@ public class User {
         return id;
     }
 
-    public Long getTelegramId() {
-        return telegramId;
+    public BotPlatform getPlatform() {
+        return platform;
+    }
+
+    public Long getExternalId() {
+        return externalId;
     }
 
     public String getUsername() {

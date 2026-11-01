@@ -2,5 +2,7 @@ package com.pechatnikov.numbermnemocardsgeneratorbot.application.service.callbac
 
 public enum CallbackType {
     SHOW_PRICES,
-    CREATE_INVOICE
+    CREATE_INVOICE,
+    /** Кнопка, выполняющая команду; value — имя {@link com.pechatnikov.numbermnemocardsgeneratorbot.domain.command.Command} */
+    RUN_COMMAND
 }

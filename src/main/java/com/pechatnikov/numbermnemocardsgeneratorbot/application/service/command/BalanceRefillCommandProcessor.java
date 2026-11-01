@@ -3,6 +3,7 @@ package com.pechatnikov.numbermnemocardsgeneratorbot.application.service.command
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.CommandProcessor;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.ShowPricesButtonUseCase;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.command.Command;
+import com.pechatnikov.numbermnemocardsgeneratorbot.domain.command.CommandContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -21,9 +22,9 @@ public class BalanceRefillCommandProcessor implements CommandProcessor {
     }
 
     @Override
-    public void process(Long telegramId, Long chatId) {
+    public void process(CommandContext context) {
         log.debug("Получена команда показать цена на пополнение баланса");
-        showPricesButtonUseCase.showPricesButton(chatId);
+        showPricesButtonUseCase.showPricesButton(context.getPlatform(), context.getChatId());
     }
 
 }

@@ -1,0 +1,31 @@
+databaseChangeLog:
+  - changeSet:
+      id: 007-multi-platform-user
+      author: dpechatnikov
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addColumn:
+            tableName: user
+            columns:
+              - column:
+                  name: platform
+                  type: VARCHAR(32)
+                  defaultValue: TELEGRAM
+                  constraints:
+                    nullable: false
+        - renameColumn:
+            tableName: user
+            oldColumnName: telegram_id
+            newColumnName: external_id
+            columnDataType: BIGINT
+        - dropUniqueConstraint:
+            tableName: user
+            constraintName: user_username_key
+        - dropNotNullConstraint:
+            tableName: user
+            columnName: username
+            columnDataType: VARCHAR
+        - addUniqueConstraint:
+            tableName: user
+            columnNames: platform, external_id
+            constraintName: uq_user_platform_external_id

@@ -1,7 +1,7 @@
 package com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram;
 
-import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.SendButtonsMessageService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.ButtonsMessage;
+import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.configuration.ConditionalOnTelegramBot;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -13,15 +13,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
+@ConditionalOnTelegramBot
 @Component
-public class SendButtonsMessageAdapter implements SendButtonsMessageService {
+public class SendButtonsMessageAdapter {
     private final TelegramApiClient telegramApiClient;
 
     public SendButtonsMessageAdapter(TelegramApiClient telegramApiClient) {
         this.telegramApiClient = telegramApiClient;
     }
 
-    @Override
     public void sendButtonsMessage(ButtonsMessage buttonsMessage) {
 
         SendMessage message = new SendMessage();
@@ -44,6 +44,7 @@ public class SendButtonsMessageAdapter implements SendButtonsMessageService {
 
         message.setReplyMarkup(markupInline);
         message.setText(buttonsMessage.getMessage());
+        message.setParseMode("Markdown");
 
         try {
             telegramApiClient.execute(message);

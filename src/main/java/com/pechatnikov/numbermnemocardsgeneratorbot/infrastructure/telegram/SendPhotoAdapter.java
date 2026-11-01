@@ -1,7 +1,7 @@
 package com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram;
 
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.exception.SendPhotoException;
-import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.SendPhotoService;
+import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.configuration.ConditionalOnTelegramBot;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
@@ -11,8 +11,9 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import java.io.File;
 
 @Slf4j
+@ConditionalOnTelegramBot
 @Component
-public class SendPhotoAdapter implements SendPhotoService {
+public class SendPhotoAdapter {
     private final TelegramApiClient telegramApiClient;
 
 

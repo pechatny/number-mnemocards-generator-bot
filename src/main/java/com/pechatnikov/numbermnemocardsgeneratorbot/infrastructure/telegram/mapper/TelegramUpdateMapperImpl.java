@@ -1,13 +1,16 @@
 package com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram.mapper;
 
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.GetOrCreateUserCommand;
+import com.pechatnikov.numbermnemocardsgeneratorbot.domain.BotPlatform;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.Message;
+import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.configuration.ConditionalOnTelegramBot;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 
 @Slf4j
+@ConditionalOnTelegramBot
 @Component
 public class TelegramUpdateMapperImpl implements TelegramUpdateMapper {
 
@@ -16,7 +19,8 @@ public class TelegramUpdateMapperImpl implements TelegramUpdateMapper {
         User telegramUser = extractTelegramUser(update);
 
         return GetOrCreateUserCommand.builder()
-            .setTelegramId(telegramUser.getId())
+            .setPlatform(BotPlatform.TELEGRAM)
+            .setExternalId(telegramUser.getId())
             .setFirstname(telegramUser.getFirstName())
             .setLastname(telegramUser.getLastName())
             .setUsername(telegramUser.getUserName())

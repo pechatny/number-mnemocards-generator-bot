@@ -2,9 +2,9 @@ package com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.SendButtonMessageService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.service.callback.CallbackType;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.ButtonMessage;
+import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.configuration.ConditionalOnTelegramBot;
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram.dto.CallbackData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -17,8 +17,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
+@ConditionalOnTelegramBot
 @Component
-public class SendButtonMessageAdapter implements SendButtonMessageService {
+public class SendButtonMessageAdapter {
     private final TelegramApiClient telegramApiClient;
     private final ObjectMapper objectMapper;
 
@@ -36,7 +37,6 @@ public class SendButtonMessageAdapter implements SendButtonMessageService {
         }
     }
 
-    @Override
     public void sendButtonMessage(ButtonMessage buttonMessage) {
         SendMessage message = new SendMessage();
         message.setChatId(buttonMessage.getChatId().toString());

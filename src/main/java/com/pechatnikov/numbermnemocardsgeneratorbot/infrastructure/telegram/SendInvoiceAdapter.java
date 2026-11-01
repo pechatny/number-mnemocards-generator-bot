@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.SendInvoiceService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.Invoice;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.InvoiceMessage;
+import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.configuration.ConditionalOnTelegramBot;
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.configuration.PaymentProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -15,6 +16,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import java.util.List;
 
 @Slf4j
+@ConditionalOnTelegramBot
 @Component
 public class SendInvoiceAdapter implements SendInvoiceService {
     private final PaymentProperties paymentProperties;

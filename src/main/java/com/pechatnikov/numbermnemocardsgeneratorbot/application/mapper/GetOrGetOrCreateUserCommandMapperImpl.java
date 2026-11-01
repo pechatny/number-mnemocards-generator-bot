@@ -12,12 +12,16 @@ public class GetOrGetOrCreateUserCommandMapperImpl implements GetOrCreateUserCom
     @Override
     public User toDomain(GetOrCreateUserCommand command) {
         // Явный контроль и валидация
-        if (command.getTelegramId() == null) {
-            throw new ValidationException("Telegram ID required");
+        if (command.getPlatform() == null) {
+            throw new ValidationException("Platform required");
+        }
+        if (command.getExternalId() == null) {
+            throw new ValidationException("External ID required");
         }
 
         return User.builder()
-            .setTelegramId(command.getTelegramId())
+            .setPlatform(command.getPlatform())
+            .setExternalId(command.getExternalId())
             .setFirstname(command.getFirstname())
             .setLastname(command.getLastname())
             .setUsername(command.getUsername())

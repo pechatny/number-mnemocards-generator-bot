@@ -2,8 +2,11 @@ package com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram;
 
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.CommandHandler;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.NumericMessageHandler;
+import com.pechatnikov.numbermnemocardsgeneratorbot.domain.BotPlatform;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.command.Command;
-import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.configuration.BotProperties;
+import com.pechatnikov.numbermnemocardsgeneratorbot.domain.command.CommandContext;
+import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.configuration.ConditionalOnTelegramBot;
+import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.configuration.TelegramBotProperties;
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram.handler.CallbackHandler;
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram.handler.PreCheckoutHandler;
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.telegram.handler.SuccessfulPaymentHandler;
@@ -23,9 +26,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
 @Slf4j
+@ConditionalOnTelegramBot
 @Component
 public class MnemocardsGeneratorBot extends TelegramLongPollingBot {
-    private final BotProperties props;
+    private final TelegramBotProperties props;
     private final ExecutorService executorService;
     private final TelegramUpdateMapper telegramUpdateMapper;
     private final NumericMessageHandler numericMessageHandler;
@@ -35,7 +39,7 @@ public class MnemocardsGeneratorBot extends TelegramLongPollingBot {
     private final CommandHandler commandHandler;
 
     public MnemocardsGeneratorBot(
-        BotProperties props,
+        TelegramBotProperties props,
         TelegramUpdateMapper telegramUpdateMapper,
         NumericMessageHandler numericMessageHandler,
         PreCheckoutHandler preCheckoutHandler,
@@ -95,7 +99,12 @@ public class MnemocardsGeneratorBot extends TelegramLongPollingBot {
         var telegramId = update.getMessage().getFrom().getId();
         var chatId = update.getMessage().getChatId();
 
-        commandHandler.handle(command, telegramId, chatId);
+        commandHandler.handle(command, CommandContext.builder()
+            .platform(BotPlatform.TELEGRAM)
+            .externalUserId(telegramId)
+            .chatId(chatId)
+            .build()
+        );
     }
 
     private boolean isCommand(Update update) {

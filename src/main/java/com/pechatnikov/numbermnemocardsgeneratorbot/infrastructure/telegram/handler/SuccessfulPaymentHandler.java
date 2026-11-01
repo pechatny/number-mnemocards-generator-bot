@@ -6,6 +6,7 @@ import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.Successf
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.InvoicePayload;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.Money;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.SuccessfulPayment;
+import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.configuration.ConditionalOnTelegramBot;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -13,6 +14,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import java.util.Currency;
 
 @Slf4j
+@ConditionalOnTelegramBot
 @Component
 public class SuccessfulPaymentHandler {
     private final SuccessfulPaymentUseCase successfulPaymentUseCase;

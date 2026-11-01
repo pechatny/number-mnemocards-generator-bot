@@ -1,5 +1,6 @@
 package com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.persistence.entity;
 
+import com.pechatnikov.numbermnemocardsgeneratorbot.domain.BotPlatform;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -23,11 +24,15 @@ public class UserEntity {
     private Long id;
 
     @NotNull
-    @Column(name = "telegram_id", nullable = false)
-    private Long telegramId;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "platform", nullable = false)
+    private BotPlatform platform;
 
     @NotNull
-    @Column(name = "username", nullable = false)
+    @Column(name = "external_id", nullable = false)
+    private Long externalId;
+
+    @Column(name = "username")
     private String username;
 
     @Column(name = "firstname")

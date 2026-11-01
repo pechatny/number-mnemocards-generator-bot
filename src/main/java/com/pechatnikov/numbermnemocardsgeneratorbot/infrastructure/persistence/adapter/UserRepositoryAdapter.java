@@ -2,6 +2,7 @@ package com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.persistence.
 
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.persistence.mapper.UserPersistenceMapper;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.UserRepositoryPort;
+import com.pechatnikov.numbermnemocardsgeneratorbot.domain.BotPlatform;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.user.User;
 import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.persistence.jpa.SpringDataUserRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,8 +17,8 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
     private final UserPersistenceMapper userPersistenceMapper;
 
     @Override
-    public Optional<User> findByTelegramId(Long telegramId) {
-        return springDataUserRepository.findByTelegramId(telegramId)
+    public Optional<User> findByPlatformAndExternalId(BotPlatform platform, Long externalId) {
+        return springDataUserRepository.findByPlatformAndExternalId(platform, externalId)
             .map(userPersistenceMapper::toDomain);
     }
 

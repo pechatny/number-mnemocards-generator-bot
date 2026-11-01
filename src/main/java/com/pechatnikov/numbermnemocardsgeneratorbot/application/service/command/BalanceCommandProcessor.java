@@ -4,9 +4,9 @@ import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.CommandP
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.TokenBalanceService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.UserService;
 import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.out.SendMessageService;
-import com.pechatnikov.numbermnemocardsgeneratorbot.domain.TokenBalance;
+import com.pechatnikov.numbermnemocardsgeneratorbot.application.service.TokenBalanceServiceImpl;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.command.Command;
-import com.pechatnikov.numbermnemocardsgeneratorbot.domain.user.User;
+import com.pechatnikov.numbermnemocardsgeneratorbot.domain.command.CommandContext;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -27,12 +27,14 @@ public class BalanceCommandProcessor implements CommandProcessor {
     }
 
     @Override
-    public void process(Long telegramId, Long chatId) {
-        User user = userService.findByTelegramId(telegramId).get();
-        TokenBalance balanceValue = tokenBalanceService.findOrCreateTokenBalanceForUser(user);
-        String message = String.format("Ваш баланс цифр %d шт.", balanceValue.getBalance());
+    public void process(CommandContext context) {
+        long balance = userService.findByPlatformAndExternalId(context.getPlatform(), context.getExternalUserId())
+            .map(user -> tokenBalanceService.findOrCreateTokenBalanceForUser(user).getBalance())
+            // Пользователь создаётся при первом числе, до этого у него стартовый баланс
+            .orElse(TokenBalanceServiceImpl.NEW_USER_INIT_TOKENS);
+        String message = String.format("Ваш баланс цифр %d шт.", balance);
 
-        sendMessageService.sendMessage(chatId, message);
+        sendMessageService.sendMessage(context.getPlatform(), context.getChatId(), message);
     }
 
 }

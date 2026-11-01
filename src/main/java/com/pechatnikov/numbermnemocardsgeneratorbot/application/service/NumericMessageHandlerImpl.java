@@ -69,10 +69,11 @@ public class NumericMessageHandlerImpl implements NumericMessageHandler {
         log.info("Получить или получить пользователя");
         var user = userService.getOrCreateUser(getOrCreateUserCommand);
         var messageWithUser = Message.toBuilder(message).user(user).build();
+        var platform = user.getPlatform();
 
         log.debug("Валидация максимального размера сообщения");
         if (message.getMessage().length() > MAX_MESSAGE_LENGTH) {
-            sendMessageService.sendMessage(message.getChatId(), MAX_MESSAGE_LENGTH_MESSAGE);
+            sendMessageService.sendMessage(platform, message.getChatId(), MAX_MESSAGE_LENGTH_MESSAGE);
             return;
         }
 
@@ -83,7 +84,7 @@ public class NumericMessageHandlerImpl implements NumericMessageHandler {
         List<String> splittedNumberList = splitter.split(message.getMessage());
 
         if (splittedNumberList.isEmpty()) {
-            sendMessageService.sendMessage(message.getChatId(), MINIMAL_NUMBER_LENGTH_MESSAGE);
+            sendMessageService.sendMessage(platform, message.getChatId(), MINIMAL_NUMBER_LENGTH_MESSAGE);
             return;
         }
 
@@ -91,7 +92,7 @@ public class NumericMessageHandlerImpl implements NumericMessageHandler {
         log.info("Необходимо {} токенов", countedTokens);
 
         if (checkTokenBalance(message, user, countedTokens)) {
-            showPricesButtonUseCase.showPricesButton(message.getChatId());
+            showPricesButtonUseCase.showPricesButton(platform, message.getChatId());
             return;
         }
 
@@ -100,7 +101,7 @@ public class NumericMessageHandlerImpl implements NumericMessageHandler {
 
         try {
             log.info("Отправить ответ");
-            sendPhotoService.sendPhoto(message.getChatId(), file);
+            sendPhotoService.sendPhoto(platform, message.getChatId(), file);
         } catch (SendPhotoException e) {
             throw new SendPhotoException(e);
         } finally {
@@ -126,7 +127,7 @@ public class NumericMessageHandlerImpl implements NumericMessageHandler {
         if (tokenBalance.getBalance() < countedTokens) {
             String notEnoughTokensMessage = String.format(NOT_ENOUGH_TOKENS_MESSAGE, countedTokens, tokenBalance.getBalance());
             log.info(notEnoughTokensMessage);
-            sendMessageService.sendMessage(message.getChatId(), notEnoughTokensMessage);
+            sendMessageService.sendMessage(user.getPlatform(), message.getChatId(), notEnoughTokensMessage);
 
             return true;
         }

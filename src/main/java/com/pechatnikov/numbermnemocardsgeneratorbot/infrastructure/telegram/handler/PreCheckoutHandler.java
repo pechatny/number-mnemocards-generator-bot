@@ -5,12 +5,14 @@ import com.pechatnikov.numbermnemocardsgeneratorbot.application.port.in.PreCheck
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.InvoicePayload;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.Money;
 import com.pechatnikov.numbermnemocardsgeneratorbot.domain.PreCheckout;
+import com.pechatnikov.numbermnemocardsgeneratorbot.infrastructure.configuration.ConditionalOnTelegramBot;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.payments.PreCheckoutQuery;
 
 import java.io.IOException;
 import java.util.Currency;
 
+@ConditionalOnTelegramBot
 @Component
 public class PreCheckoutHandler {
     private final ObjectMapper objectMapper;

@@ -8,9 +8,10 @@ import lombok.Value;
 @Builder
 public class Callback {
     CallbackType type;
-    Long telegramId;
+    BotPlatform platform;
+    Long externalUserId;
     Long chatId;
-    Integer messageId;
+    String messageId;
     String callbackQueryId;
     String value;
 }
