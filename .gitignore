@@ -67,3 +67,4 @@ Temporary Items
 ### Local Configuration ###
 .env
 .env.docker
+/.zed/
